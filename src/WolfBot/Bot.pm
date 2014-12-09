@@ -1,5 +1,6 @@
 #!/usr/bin/env perl
 
+use v5.20.1;
 use warnings;
 use strict;
 use diagnostics;
@@ -27,7 +28,7 @@ sub said {
     #say command
     if ($command =~ m/^say/) {
       #get what to say
-      my $what_to_say = split(\s);
+      my $what_to_say = split(/\s/, $command);
 
       #say it
       $self->say(
