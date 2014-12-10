@@ -1,13 +1,9 @@
-#!/usr/bin/env perl
-
-use v5.20.1;
 use warnings;
 use strict;
 use diagnostics;
 
 package WolfBot::Bot;
 use base qw(Bot::BasicBot);
-
 
 #My said subroutine
 sub said {
@@ -32,9 +28,11 @@ sub said {
 
       #say it
       $self->say(
-        channel => $message->{channel},
-        body    => $what_to_say
+      channel => $message->{channel},
+      body    => $what_to_say
       );
+
+      $self->shutdown;
     }
   }
 }
