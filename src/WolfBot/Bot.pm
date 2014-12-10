@@ -8,18 +8,11 @@ use base qw(Bot::BasicBot);
 #My said subroutine
 sub said {
   #get some args
-  my ($self, $message, $who) = @_;
+  my ($self, $message) = @_;
   my $body = $message->{body};
 
   if ($body =~ m/^\&/) {
     my ($activation, $command) = split(/^&/, $body);
-
-    #quit command
-    if ($command eq 'quit') {
-      if ($who eq 'Strikingwolf') {
-        $self->shutdown();
-      }
-    }
 
     #say command
     if ($command =~ m/^say/) {
@@ -47,7 +40,7 @@ sub said {
     if ($command eq 'help') {
       $self->say(
       channel => $message->{channel},
-      body    => ('My activation character is & and I can do these commands: help, say, kill, action, and quit')
+      body    => ('My activation character is & and I can do these commands: help, say, kill, and action')
       );
     }
 
