@@ -11,8 +11,8 @@ sub said {
   my ($self, $message) = @_;
   my $body = $message->{body};
 
-  if ($body =~ m/^\*/) {
-    my ($activation, $command) = split(/^\*/, $body);
+  if ($body =~ m/^\&/) {
+    my ($activation, $command) = split(/^&/, $body);
 
     #quit command
     if ($command eq 'quit') {
@@ -35,9 +35,9 @@ sub said {
     if ($command =~ m/^kill/) {
       my ($kill, $what_to_kill) = split(/^kill\s/, $command);
 
-      $self->say(
+      $self->emote(
       channel => $message->{channel},
-      body    => ('I have terminated ' . $what_to_kill)
+      body    => ('Terminates ' . $what_to_kill)
       );
     }
 
@@ -45,19 +45,26 @@ sub said {
     if ($command eq 'help') {
       $self->say(
       channel => $message->{channel},
-      body    => ('My activation character is * and I can do these commands: help, say, kill, modemteth, and quit')
+      body    => ('My activation character is & and I can do these commands: help, say, kill, action, and quit')
       );
     }
 
-    #The modemteth command
-    if ($command =~ m/^modemteth/) {
-      my ($modemteth, $what_to_do_with_teth) = split(/modemteth\s/, $command);
+    #The action command
+    if ($command =~ m/^action/) {
+      my ($action, $action_to_do) = split(/action\s/, $command);
 
-      $self->say(
+      $self->emote(
       channel => $message->{channel},
-      body    => '/me ' . $what_to_do_with_teth
+      body    => $action_to_do
       );
     }
+  }
+
+  if ($body =~ m/StrikingwolfBot/) {
+    $self->say(
+    channel => $message->{channel},
+    body    => 'Why did you mention me?!'
+    );
   }
 
 }
