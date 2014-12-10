@@ -71,19 +71,4 @@ sub said {
   }
 
 }
-
-sub chanjoin {
-  #get args
-  my ($self, $message) = @_;
-  my $channel = $message->{channel};
-  my $who = $message->{who};
-
-
-  if ($who ne 'StrikingwolfBot') {
-    $self->say(
-    channel => $channel,
-    body    => ($who . ', welcome to ' . $channel)
-    );
-  }
-}
 1;
