@@ -8,7 +8,7 @@ use base qw(Bot::BasicBot);
 #My said subroutine
 sub said {
   #get some args
-  my ($self, $message) = @_;
+  my ($self, $message, $who) = @_;
   my $body = $message->{body};
 
   if ($body =~ m/^\&/) {
@@ -16,7 +16,9 @@ sub said {
 
     #quit command
     if ($command eq 'quit') {
-      $self->shutdown();
+      if ($who eq 'Strikingwolf') {
+        $self->shutdown();
+      }
     }
 
     #say command
