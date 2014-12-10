@@ -10,9 +10,17 @@ sub said {
   #get some args
   my ($self, $message) = @_;
   my $body = $message->{body};
+  my $who = $message->{who};
 
-  if ($body =~ m/^\&/) {
-    my ($activation, $command) = split(/^&/, $body);
+  if ($body =~ m/^\@/) {
+    my ($activation, $command) = split(/^@/, $body);
+
+    #quit command
+    if ($command eq 'quit') {
+      if ($who eq 'Strikingwolf') {
+        $self->shutdown;
+      }
+    }
 
     #say command
     if ($command =~ m/^say/) {
@@ -40,7 +48,7 @@ sub said {
     if ($command eq 'help') {
       $self->say(
       channel => $message->{channel},
-      body    => ('My activation character is & and I can do these commands: help, say, kill, and action')
+      body    => ('My activation character is @ and I can do these commands: help, say, kill, and action')
       );
     }
 
@@ -71,9 +79,11 @@ sub chanjoin {
   my $who = $message->{who};
 
 
-  $self->say(
-  channel => $channel,
-  body    => ($who . ', welcome to ' . $channel)
-  );
+  if ($who ne 'StrikingwolfBot') {
+    $self->say(
+    channel => $channel,
+    body    => ($who . ', welcome to ' . $channel)
+    );
+  }
 }
 1;
