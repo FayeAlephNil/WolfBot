@@ -19,7 +19,7 @@ sub said {
   #say command
   if ($body =~ m/^~say/) {
     #get what to say
-    my $what_to_say = split(/\s/, $body);
+    my ($say, $what_to_say) = split(/^~say\s/, $body);
 
     #say it
     $self->say(
@@ -27,5 +27,23 @@ sub said {
       body    => $what_to_say
     );
   }
+
+  #kill command
+  if ($body =~ m/^~kill/) {
+    my ($kill, $what_to_kill) = split(/^~kill\s/, $body);
+
+    $self->say(
+    channel => $message->{channel},
+    body    => ('I have terminated ' . $what_to_kill)
+    );
+  }
+
+ #help command
+ if ($body =~ m/~help/) {
+   $self->say(
+   channel => $message->{channel},
+   body    => ('My activation character is ~ and I can do these commands: help, say, kill, and quit')
+   );
+ }
 }
 1;
