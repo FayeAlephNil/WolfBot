@@ -14,7 +14,7 @@ server    => 'irc.esper.net',
 port      => '6667',
 channels  => [$chan],
 
-nick      => 'WolfBot',
+nick      => 'StrikingwolfBot',
 alt_nicks => ['TheWolfBot', 'StrikingBot'],
 username  => 'WolfBot',
 name      => 'Strikingwolfs\'s IRC bot'

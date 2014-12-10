@@ -11,29 +11,21 @@ sub said {
   my ($self, $message) = @_;
   my $body = $message->{body};
 
-  #check if body is a WolfBot command
-  if ($body =~ m/^~/) {
-    #get the command
-    my $command = split(/~/, $body);
+  #quit command
+  if ($body eq '~quit') {
+    $self->shutdown();
+  }
 
-    #quit command
-    if ($command eq 'quit') {
-      $self->shutdown();
-    }
+  #say command
+  if ($body =~ m/^~say/) {
+    #get what to say
+    my $what_to_say = split(/\s/, $body);
 
-    #say command
-    if ($command =~ m/^say/) {
-      #get what to say
-      my $what_to_say = split(/\s/, $command);
-
-      #say it
-      $self->say(
+    #say it
+    $self->say(
       channel => $message->{channel},
       body    => $what_to_say
-      );
-
-      $self->shutdown;
-    }
+    );
   }
 }
 1;
