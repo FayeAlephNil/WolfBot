@@ -63,10 +63,10 @@ sub said {
     }
   }
 
-  if ($body =~ m/StrikingwolfBot/) {
+  if ($body =~ m/\@StrikingwolfBot/) {
     $self->say(
     channel => $message->{channel},
-    body    => 'Why did you mention me?!'
+    body    => ('What do you need ' . $who)
     );
   }
 
