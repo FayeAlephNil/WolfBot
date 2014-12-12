@@ -10,7 +10,8 @@ sub said {
   #get some args
   my ($self, $message) = @_;
   my $body = $message->{body};
-  my $who = $message->{who};
+  my $nick = $message->{who};
+  my $who = $message->{raw_nick};
 
   if ($body =~ m/^\@/) {
     my ($activation, $command) = split(/^@/, $body);
@@ -48,7 +49,7 @@ sub said {
     if ($command eq 'help') {
       $self->say(
       channel => $message->{channel},
-      body    => ('My activation character is @ and I can do these commands: help, say, kill, and action')
+      body    => ('My activation character is @ and I can do these commands: help, say, kill, cookie, and action')
       );
     }
 
@@ -70,7 +71,7 @@ sub said {
       #give the cookie it
       $self->say(
       channel => $message->{channel},
-      body    => $who_to . ', you got a cookie from ' . $who
+      body    => $who_to . ', you got a cookie from ' . $nick
       );
     }
   }
