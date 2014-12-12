@@ -12,7 +12,7 @@ our $chan = '#ItsAnimeTime';
 our $bot = WolfBot::Bot->new(
 server    => 'irc.esper.net',
 port      => '6667',
-channels  => [$chan, '#FTB-Wiki', '#WAMM'],
+channels  => [$chan, '#FTB-Wiki', '#wamm_bots'],
 
 nick      => 'StrikingwolfBot',
 alt_nicks => ['TheWolfBot', 'StrikingBot'],
