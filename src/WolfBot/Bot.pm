@@ -49,7 +49,7 @@ sub said {
     if ($command eq 'help') {
       $self->say(
       channel => $message->{channel},
-      body    => ('My activation character is @ and I can do these commands: help, say, kill, cookie, and action')
+      body    => ('My activation character is @ and I can do these commands: github, help, say, kill, cookie, and action')
       );
     }
 
@@ -72,6 +72,14 @@ sub said {
       $self->say(
       channel => $message->{channel},
       body    => $who_to . ', you got a cookie from ' . $nick
+      );
+    }
+
+    #github command
+    if ($command eq 'github') {
+      $self->say(
+      channel => $message->{channel},
+      body    => 'https://github.com/Strikingwolf/WolfBot'
       );
     }
   }
