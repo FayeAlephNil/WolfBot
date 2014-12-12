@@ -61,6 +61,18 @@ sub said {
       body    => $action_to_do
       );
     }
+
+    #cookie command
+    if ($command =~ m/^cookie/) {
+      #get who_to
+      my ($say, $who_to) = split(/^cookie\s/, $command);
+
+      #give the cookie it
+      $self->say(
+      channel => $message->{channel},
+      body    => $who_to . ', you got a cookie from ' . $who
+      );
+    }
   }
 
   if ($body =~ m/\@StrikingwolfBot/) {
