@@ -86,19 +86,19 @@ sub said {
     }
 
     #repos command
-    if ($command =~ m/^repos/) {
+    #if ($command =~ m/^repos/) {
       #get user
-      my ($repos, $user) = split(/^repos\s/, $command);
+      #my ($repos, $user) = split(/^repos\s/, $command);
 
-      my $p = Pithub->new;
+      #my $p = Pithub->new;
 
-      my $result = $p->repos->list( user => $user );
-      while ( my $row = $result->next ) {
-        $self->say(
-        channel => $message->{channel},
-        body    => $row->{name}
-        );
-      }
+      #my $result = $p->repos->list( user => $user );
+      #while ( my $row = $result->next ) {
+        #$self->say(
+        #channel => $message->{channel},
+        #body    => $row->{name}
+        #);
+      #}
     }
   }
 
