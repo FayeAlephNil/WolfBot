@@ -20,7 +20,7 @@ channels  => @chans,
 nick      => $nick,
 password  => $password,
 alt_nicks => ['TheWolfBot', 'StrikingBot'],
-username  => $username
+username  => $username,
 name      => 'Strikingwolfs\'s IRC bot'
 );
 
