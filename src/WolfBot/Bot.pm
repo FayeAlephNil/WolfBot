@@ -124,7 +124,7 @@ sub this_command_needs_args {
   my ($command_name, $how_many, $message_to_respond_to, $self) = @_;
   $self->say(
   channel => $message_to_respond_to->{channel},
-  body    => $message_to_respond_to->{who} . " " . $command_name . " needs " . $how_many . " arguments"
+  body    => $message_to_respond_to->{who} . " " . $command_name . " needs " . $how_many . " arguments separated by whitespace"
   );
 }
 1;
