@@ -7,17 +7,28 @@ use diagnostics;
 use WolfBot::Bot;
 use Bot::BasicBot;
 
-our $chan = '#ItsAnimeTime';
+our @chans = ['#ItsAnimeTime', '#FTB-Wiki', '#wamm_bots'];
+our $password = prompt("Password:\n");
 
 our $bot = WolfBot::Bot->new(
 server    => 'irc.esper.net',
 port      => '6667',
-channels  => [$chan, '#FTB-Wiki', '#wamm_bots'],
+channels  => @chans,
 
 nick      => 'StrikingwolfBot',
+password  => $password,
 alt_nicks => ['TheWolfBot', 'StrikingBot'],
-username  => 'WolfBot',
+username  => 'StrikingwolfBot',
 name      => 'Strikingwolfs\'s IRC bot'
 );
 
 $bot->run();
+
+sub prompt {
+  my ($text) = @_;
+  print $text;
+
+  my $answer = <STDIN>;
+  chomp $answer;
+  return $answer;
+}

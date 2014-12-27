@@ -99,7 +99,7 @@ sub said {
         #body    => $row->{name}
         #);
       #}
-    }
+    #}
   }
 
   if ($body =~ m/\@StrikingwolfBot/) {
