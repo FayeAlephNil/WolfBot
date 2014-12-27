@@ -95,7 +95,7 @@ sub said {
       #get who_to
       my ($say, $who_to) = split(/^cookie\s/, $command);
 
-      if(@who_to ne "") {
+      if($who_to ne "") {
         #give the cookie to it
         $self->say(
         channel => $message->{channel},
