@@ -111,10 +111,10 @@ sub said {
     #}
   }
 
-  if ($body =~ m/\@StrikingwolfBot/) {
+  if ($body =~ m/\@$self->{nick}/) {
     $self->say(
     channel => $message->{channel},
-    body    => ('What do you need ' . $who)
+    body    => ('What do you need ' . $nick)
     );
   }
 
