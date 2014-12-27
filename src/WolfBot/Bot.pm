@@ -36,7 +36,7 @@ sub said {
       channel => $message->{channel},
       body    => $what_to_say
       );
-    } else if ($command =~ m/^say/) {
+    } elsif ($command =~ m/^say/) {
       this_command_needs_args("say", 1, $message, $self)
     }
 
@@ -48,7 +48,7 @@ sub said {
       channel => $message->{channel},
       body    => ('Terminates ' . $what_to_kill)
       );
-    } else if ($command =~ m/^kill/) {
+    } elsif ($command =~ m/^kill/) {
       this_command_needs_args("kill", 1, $message, $self)
     }
 
@@ -68,7 +68,7 @@ sub said {
       channel => $message->{channel},
       body    => $action_to_do
       );
-    } else if ($command =~ m/^action/) {
+    } elsif ($command =~ m/^action/) {
       this_command_needs_args("action", 1, $message, $self)
     }
 
@@ -82,7 +82,7 @@ sub said {
       channel => $message->{channel},
       body    => $who_to . ', you got a cookie from ' . $nick
       );
-    } else if ($command =~ m/^cookie/) {
+    } elsif ($command =~ m/^cookie/) {
       this_command_needs_args("cookie", 1, $message, $self)
     }
 
@@ -124,7 +124,7 @@ sub this_command_needs_args {
   my ($command_name, $how_many, $message_to_respond_to, $self) = @_;
   $self->say(
   channel => $message_to_respond_to->{channel},
-  body    => $message_to_respond_to->{who} . " " . $command_name "needs " . $how_many . " arguments"
+  body    => $message_to_respond_to->{who} . " " . $command_name . "needs " . $how_many . " arguments"
   );
 }
 1;
