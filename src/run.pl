@@ -7,8 +7,8 @@ use diagnostics;
 use WolfBot::Bot;
 use Bot::BasicBot;
 
-our @chans = ['#ItsAnimeTime', '#FTB-Wiki', '#wamm_bots'];
-our $password = prompt("Password:\n");
+my @chans = ['#ItsAnimeTime', '#FTB-Wiki', '#wamm_bots'];
+my $password = prompt("Password:\n");
 
 our $bot = WolfBot::Bot->new(
 server    => 'irc.esper.net',
