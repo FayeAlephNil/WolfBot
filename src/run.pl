@@ -10,7 +10,7 @@ use Bot::BasicBot;
 my @chans = ['#ItsAnimeTime', '#FTB-Wiki', '#wamm_bots'];
 my $password = prompt("Password:\n");
 
-our $bot = WolfBot::Bot->new(
+my $bot = WolfBot::Bot->new(
 server    => 'irc.esper.net',
 port      => '6667',
 channels  => @chans,
