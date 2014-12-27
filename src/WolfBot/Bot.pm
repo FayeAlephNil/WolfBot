@@ -30,21 +30,38 @@ sub said {
       #get what to say
       my ($say, $what_to_say) = split(/^say\s/, $command);
 
-      #say it
-      $self->say(
-      channel => $message->{channel},
-      body    => $what_to_say
-      );
+      if ($what_to_say ne "")
+      {
+        #say it
+        $self->say(
+        channel => $message->{channel},
+        body    => $what_to_say
+        );
+      } else {
+        $self ->(
+        channel => $message->{channel},
+        body    => $nick . " say needs an argument"
+        );
+      }
     }
 
     #kill command
     if ($command =~ m/^kill/) {
       my ($kill, $what_to_kill) = split(/^kill\s/, $command);
 
-      $self->emote(
-      channel => $message->{channel},
-      body    => ('Terminates ' . $what_to_kill)
-      );
+      if ($what_to_kill ne "")
+      {
+        #terminate it
+        $self->say(
+        channel => $message->{channel},
+        body    => "Terminates " . $what_to_kill
+        );
+      } else {
+        $self ->(
+        channel => $message->{channel},
+        body    => $nick . " kill needs an argument"
+        );
+      }
     }
 
     #help command
@@ -59,10 +76,18 @@ sub said {
     if ($command =~ m/^action/) {
       my ($action, $action_to_do) = split(/action\s/, $command);
 
-      $self->emote(
-      channel => $message->{channel},
-      body    => $action_to_do
-      );
+      if($action_to_do ne "") {
+        #do the action
+        $self->emote(
+        channel => $message->{channel},
+        body    => $action_to_do
+        );
+      } else {
+        $self ->(
+        channel => $message->{channel},
+        body    => $nick . " action needs an argument"
+        );
+      }
     }
 
     #cookie command
@@ -70,11 +95,18 @@ sub said {
       #get who_to
       my ($say, $who_to) = split(/^cookie\s/, $command);
 
-      #give the cookie it
-      $self->say(
-      channel => $message->{channel},
-      body    => $who_to . ', you got a cookie from ' . $nick
-      );
+      if(@who_to ne "") {
+        #give the cookie to it
+        $self->say(
+        channel => $message->{channel},
+        body    => $who_to . ', you got a cookie from ' . $nick
+        );
+      } else {
+        $self->say(
+        channel => $message->{channel},
+        body    => $nick . " cookie needs an argument"
+        );
+      }
     }
 
     #github command
