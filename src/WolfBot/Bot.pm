@@ -36,7 +36,7 @@ sub said {
       channel => $message->{channel},
       body    => $what_to_say
       );
-    } elsif ($command =~ m/^say/) {
+    } elsif ($command =~ m/^say\s*/) {
       this_command_needs_args("say", 1, $message, $self)
     }
 
@@ -48,7 +48,7 @@ sub said {
       channel => $message->{channel},
       body    => ('Terminates ' . $what_to_kill)
       );
-    } elsif ($command =~ m/^kill/) {
+    } elsif ($command =~ m/^kill\s*/) {
       this_command_needs_args("kill", 1, $message, $self)
     }
 
@@ -68,7 +68,7 @@ sub said {
       channel => $message->{channel},
       body    => $action_to_do
       );
-    } elsif ($command =~ m/^action/) {
+    } elsif ($command =~ m/^action\s*/) {
       this_command_needs_args("action", 1, $message, $self)
     }
 
@@ -82,7 +82,7 @@ sub said {
       channel => $message->{channel},
       body    => $who_to . ', you got a cookie from ' . $nick
       );
-    } elsif ($command =~ m/^cookie/) {
+    } elsif ($command =~ m/^cookie\s*/) {
       this_command_needs_args("cookie", 1, $message, $self)
     }
 
