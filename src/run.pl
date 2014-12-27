@@ -8,8 +8,8 @@ use WolfBot::Bot;
 use Bot::BasicBot;
 
 my @chans = ['#ItsAnimeTime', '#FTB-Wiki', '#wamm_bots'];
-my $nick = prompt("What do you want the nick to be?\n")
-my $username = prompt("Username:\n")
+my $nick = prompt("What do you want the nick to be?\n");
+my $username = prompt("Username:\n");
 my $password = prompt("Password:\n");
 
 my $bot = WolfBot::Bot->new(
