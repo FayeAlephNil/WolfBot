@@ -7,7 +7,7 @@ use diagnostics;
 use WolfBot::Bot;
 use Bot::BasicBot;
 
-my @chans = ['#ItsAnimeTime', '#FTB-Wiki', '#wamm_bots'];
+my @chans = ['#ItsAnimeTime', '#FTB-Wiki', '#wamm_bots', '#StopModReposts'];
 my $nick = prompt("What do you want the nick to be?\n");
 my $username = prompt("Username:\n");
 my $password = prompt("Password:\n");
