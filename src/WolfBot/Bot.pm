@@ -18,13 +18,41 @@ sub said {
   if ($body =~ m/^\@/) {
     my ($activation, $command) = split(/^@/, $body);
 
-    #quit command
-    if ($command eq 'quit') {
-      if ($who eq 'Strikingwolf') {
+    #op commands
+    if ($who eq 'Strikingwolf!~strikingw@2601:b:2700:de5:3426:ba15:425e:3008') {
+      #quit command
+      if ($command eq 'quit') {
         $self->shutdown;
+      }
+
+      #part command
+      if ($command =~ m/^part\s.+/) {
+        my ($part, $part_chan) = split(/^part\s/, $command);
+
+        $self->part($part_chan);
+
+      } elsif ($command =~ m/^part\s*/) {
+        this_command_needs_args('part', 1, $message, $self);
+      }
+
+      #join command
+      if ($command =~ m/^join\s.+/) {
+        my ($join, $join_chan) = split(/^join\s/, $command);
+
+        $self->join($join_chan);
+
+      } elsif ($command =~ m/^join\s*/) {
+        this_command_needs_args('join', 1, $message, $self);
       }
     }
 
+    #host command
+    if ($command eq 'host') {
+      $self->say(
+      channel => $message->{channel},
+      body    => $nick . ', your host is ' . $who
+      );
+    }
     #say command
     if ($command =~ m/^say\s.+/) {
       #get what to say
@@ -37,7 +65,7 @@ sub said {
       body    => $what_to_say
       );
     } elsif ($command =~ m/^say\s*/) {
-      this_command_needs_args("say", 1, $message, $self)
+      this_command_needs_args("say", 1, $message, $self);
     }
 
     #kill command
@@ -56,7 +84,7 @@ sub said {
     if ($command eq 'help') {
       $self->say(
       channel => $message->{channel},
-      body    => ('My activation character is @ and I can do these commands: github, help, say, kill, cookie, and action')
+      body    => ('My activation character is @ and I can do these commands: github, help, say, kill, cookie, action, and host. I can also do part, join, and quit if the person is Strikingwolf')
       );
     }
 
