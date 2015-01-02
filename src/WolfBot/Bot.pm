@@ -30,7 +30,8 @@ sub said {
         who     => $nick,
         body    => $nick . ', you have been added to the list of ops'
         );
-        push(@ops, $who);
+        my ($throway, $new_op) = split(/^$nick!/);
+        push(@ops, $new_op);
       } else {
         $self->say(
         channel => $message->{channel},
@@ -44,7 +45,7 @@ sub said {
 
     #op commands
     foreach my $op (@ops) {
-      if ($who eq $op) {
+      if ($who =~ m/$op$/) {
         #quit command
         if ($command eq 'quit') {
           $self->shutdown;
