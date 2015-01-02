@@ -5,6 +5,7 @@ use diagnostics;
 package WolfBot::Bot;
 use base qw(Bot::BasicBot);
 use Pithub;
+use LWP::Simple;
 use Data::Dumper;
 
 my @ops = [];
@@ -17,6 +18,7 @@ sub said {
   my $body = $message->{body};
   my $nick = $message->{who};
   my $who = $message->{raw_nick};
+  my $pocoirc = $self->pocoirc();
 
   if ($body =~ m/^\@/) {
     my ($activation, $command) = split(/^@/, $body);
@@ -58,7 +60,7 @@ sub said {
           $self->part($part_chan);
 
         } elsif ($command =~ m/^part\s*/) {
-          this_command_needs_args('part', 1, $message, $self);
+          $self->part($message->{channel})
         }
 
         #join command
@@ -72,6 +74,25 @@ sub said {
         }
       }
     }
+
+    #channel owner commands
+    if ($pocoirc->is_channel_operator($message->{channel}, $nick)) {
+      if ($command eq 'leave') {
+        $self->part($message->{channel});
+      }
+    }
+
+    #drama command
+    if ($command eq 'drama') {
+      my $drama_url = "http://asie.pl/drama.php?2&plain";
+      my $content = get($drama_url);
+      my $drama = substr($content, 0, index($content, '<'));
+      $self->say(
+      channel => $message->{channel},
+      body    => $drama
+      );
+    }
+
     #host command
     if ($command eq 'host') {
       $self->say(
@@ -79,8 +100,9 @@ sub said {
       body    => $nick . ', your host is ' . $who
       );
     }
+
     #say command
-    if ($command =~ m/^say\s.+/) {
+    if ($command =~ m/^say\s/) {
       #get what to say
       my ($say, $what_to_say) = split(/^say\s/, $command);
 
@@ -92,6 +114,35 @@ sub said {
       );
     } elsif ($command =~ m/^say\s*/) {
       this_command_needs_args("say", 1, $message, $self);
+    }
+
+    #say_in_chan
+    if ($command =~ m/^say_in_chan\s.+\s.+/) {
+      my ($say_in_chan, $rest) = split(/^say_in_chan\s/, $command);
+
+      #get chan/say
+      my $the_chan = substr($rest, 0, index($rest, ' '));
+      my @get_to_say = split(/\s/, $rest);
+      my $count = 0;
+      my $to_say = '';
+      foreach my $word (@get_to_say) {
+        if ($count == 0) {
+          if ($word eq $the_chan) {
+            $count += 2;
+          } else {
+            $to_say = $to_say . ' ' . $word;
+          }
+        } else {
+          $to_say = $to_say . ' ' . $word;
+        }
+      }
+
+      $self->say(
+      channel => $the_chan,
+      body    => $to_say
+      );
+    } elsif ($command =~ m/^say_in_chan/) {
+      this_command_needs_args("say", 2, $message, $self);
     }
 
     #kill command
@@ -110,7 +161,7 @@ sub said {
     if ($command eq 'help') {
       $self->say(
       channel => $message->{channel},
-      body    => ('My activation character is @ and I can do these commands: github, help, say, kill, cookie, action, and host. I can also do part, join, and quit if the person is Strikingwolf')
+      body    => ('My activation character is @ and I can do these commands: drama, github, help, say, say_in_chan (chan then message), kill, cookie, action, and host. I can also do part, join, and quit if the person is authenticated with me. To authenticate msg me @auth [the-password]. For channel ops you can do the leave command to get rid of em')
       );
     }
 
