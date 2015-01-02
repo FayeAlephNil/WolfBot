@@ -10,7 +10,7 @@ use Bot::BasicBot;
 my @chans = ['#Strikingwolf'];
 my $nick = prompt("What do you want the nick to be?\n");
 my $username = prompt("Username:\n");
-my $password = prompt("Password:\n");
+my $user_password = prompt("Password:\n");
 
 my $bot = WolfBot::Bot->new(
 server    => 'irc.esper.net',
@@ -18,7 +18,7 @@ port      => '6667',
 channels  => @chans,
 
 nick      => $nick,
-password  => $password,
+password  => $user_password,
 alt_nicks => ['TheWolfBot', 'StrikingBot'],
 username  => $username,
 name      => 'Strikingwolfs\'s IRC bot'

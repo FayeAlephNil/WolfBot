@@ -7,6 +7,9 @@ use base qw(Bot::BasicBot);
 use Pithub;
 use Data::Dumper;
 
+my @ops = [];
+my $auth_password = '';
+
 #My said subroutine
 sub said {
   #get some args
@@ -18,34 +21,56 @@ sub said {
   if ($body =~ m/^\@/) {
     my ($activation, $command) = split(/^@/, $body);
 
-    #op commands
-    if ($who eq 'Strikingwolf!~strikingw@2601:b:2700:de5:3426:ba15:425e:3008') {
-      #quit command
-      if ($command eq 'quit') {
-        $self->shutdown;
+    if ($command =~ m/^auth\s.+/) {
+      my ($auth, $pass) = split (/^auth\s/, $command);
+
+      if ($pass eq $auth_password) {
+        $self->say(
+        channel => $message->{channel},
+        who     => $nick,
+        body    => $nick . ', you have been added to the list of ops'
+        );
+        push(@ops, $who);
+      } else {
+        $self->say(
+        channel => $message->{channel},
+        who     => $nick,
+        body    => $nick . ', that is not the correct password'
+        );
       }
-
-      #part command
-      if ($command =~ m/^part\s.+/) {
-        my ($part, $part_chan) = split(/^part\s/, $command);
-
-        $self->part($part_chan);
-
-      } elsif ($command =~ m/^part\s*/) {
-        this_command_needs_args('part', 1, $message, $self);
-      }
-
-      #join command
-      if ($command =~ m/^join\s.+/) {
-        my ($join, $join_chan) = split(/^join\s/, $command);
-
-        $self->join($join_chan);
-
-      } elsif ($command =~ m/^join\s*/) {
-        this_command_needs_args('join', 1, $message, $self);
-      }
+    } elsif ($command =~ m/^auth\s*/) {
+      this_command_needs_args('auth', 1, $message, $self);
     }
 
+    #op commands
+    foreach my $op (@ops) {
+      if ($who eq $op) {
+        #quit command
+        if ($command eq 'quit') {
+          $self->shutdown;
+        }
+
+        #part command
+        if ($command =~ m/^part\s.+/) {
+          my ($part, $part_chan) = split(/^part\s/, $command);
+
+          $self->part($part_chan);
+
+        } elsif ($command =~ m/^part\s*/) {
+          this_command_needs_args('part', 1, $message, $self);
+        }
+
+        #join command
+        if ($command =~ m/^join\s.+/) {
+          my ($join, $join_chan) = split(/^join\s/, $command);
+
+          $self->join($join_chan);
+
+        } elsif ($command =~ m/^join\s*/) {
+          this_command_needs_args('join', 1, $message, $self);
+        }
+      }
+    }
     #host command
     if ($command eq 'host') {
       $self->say(
@@ -148,6 +173,11 @@ sub said {
 
 }
 
+sub init {
+ $auth_password = prompt("Password for OP: \n");
+ return 1;
+}
+
 sub this_command_needs_args {
   my ($command_name, $how_many, $message_to_respond_to, $self) = @_;
   $self->say(
@@ -155,4 +185,14 @@ sub this_command_needs_args {
   body    => $message_to_respond_to->{who} . " " . $command_name . " needs " . $how_many . " arguments separated by whitespace"
   );
 }
+
+sub prompt {
+  my ($text) = @_;
+  print $text;
+
+  my $answer = <STDIN>;
+  chomp $answer;
+  return $answer;
+}
+
 1;
