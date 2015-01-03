@@ -48,6 +48,10 @@ sub said {
     #op commands
     foreach my $op (@ops) {
       if ($who =~ m/$op$/) {
+        if ($command eq 'startup') {
+          startup($self);
+        }
+
         #quit command
         if ($command eq 'quit') {
           $self->shutdown;
@@ -238,7 +242,7 @@ sub said {
       $self->notice(
       channel => 'msg',
       who     => $nick,
-      body    => ('My activation character is @ and I can do these commands: py, ops, drama, github, help, say, say_in_chan (chan then message), act_in_chan (chan then message), kill, cookie, action, and host. I can also do part, join, and quit if the person is authenticated with me. To authenticate msg me @auth [the-password]. For channel ops you can do the leave command to get rid of me')
+      body    => ('My activation character is @ and I can do these commands: py, ops, drama, github, help, say, say_in_chan (chan then message), act_in_chan (chan then message), kill, cookie, action, and host. I can also do part, startup, join, and quit if the person is authenticated with me. To authenticate msg me @auth [the-password]. For channel ops you can do the leave command to get rid of me')
       );
     }
 
@@ -322,6 +326,15 @@ sub say_Ops {
   channel => $channel,
   body    => join(", ", @ops)
   );
+}
+
+sub startup {
+  my ($self) = @_;
+  my @startup_chans = ['#WAMM', '#wamm_bots', '#Inumuta', '#stopmodreposts', '#BlazeLoader', '#ItsAnimeTime', '#FTB-Wiki', '#SatanicSanta', '#ModPackers', '#Gideonseymour', '#randomtrajing'];
+
+  foreach $chan (@startup_chans) {
+    $self->join($chan);
+  }
 }
 
 sub prompt {
