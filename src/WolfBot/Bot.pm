@@ -32,7 +32,7 @@ sub said {
         who     => $nick,
         body    => $nick . ', you have been added to the list of ops'
         );
-        my ($throway, $new_op) = split(/^$nick!/);
+        my ($throway, $new_op) = split(/^$nick!/, $who);
         push(@ops, $new_op);
       } else {
         $self->say(
@@ -55,6 +55,7 @@ sub said {
 
         #part command
         if ($command =~ m/^part\s.+/) {
+
           my ($part, $part_chan) = split(/^part\s/, $command);
 
           $self->part($part_chan);
@@ -65,6 +66,7 @@ sub said {
 
         #join command
         if ($command =~ m/^join\s.+/) {
+
           my ($join, $join_chan) = split(/^join\s/, $command);
 
           $self->join($join_chan);
@@ -80,6 +82,11 @@ sub said {
       if ($command eq 'leave') {
         $self->part($message->{channel});
       }
+    }
+
+    #ops command
+    if ($command eq 'ops') {
+      say_Ops($self, $message->{channel});
     }
 
     #drama command
@@ -155,7 +162,7 @@ sub said {
       $to_say = substr($to_say, 1);
       $self->say(
       channel => $the_chan,
-      body    => $to_say
+      body    => $nick . " told me to say, " . $to_say
       );
     } elsif ($command =~ m/^say_in_chan/) {
       this_command_needs_args("say_in_chan", 2, $message, $self);
@@ -207,7 +214,7 @@ sub said {
     if ($command eq 'help') {
       $self->say(
       channel => $message->{channel},
-      body    => ('My activation character is @ and I can do these commands: drama, github, help, say, say_in_chan (chan then message), act_in_chan (chan then message), kill, cookie, action, and host. I can also do part, join, and quit if the person is authenticated with me. To authenticate msg me @auth [the-password]. For channel ops you can do the leave command to get rid of me')
+      body    => ('My activation character is @ and I can do these commands: ops, drama, github, help, say, say_in_chan (chan then message), act_in_chan (chan then message), kill, cookie, action, and host. I can also do part, join, and quit if the person is authenticated with me. To authenticate msg me @auth [the-password]. For channel ops you can do the leave command to get rid of me')
       );
     }
 
@@ -281,6 +288,15 @@ sub this_command_needs_args {
   $self->say(
   channel => $message_to_respond_to->{channel},
   body    => $message_to_respond_to->{who} . " " . $command_name . " needs " . $how_many . " arguments separated by whitespace"
+  );
+}
+
+sub say_Ops {
+  my ($self, $channel) = @_;
+
+  $self->say(
+  channel => $channel,
+  body    => join(", ", @ops)
   );
 }
 
