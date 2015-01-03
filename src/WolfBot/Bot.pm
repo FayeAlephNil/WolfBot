@@ -330,11 +330,17 @@ sub say_Ops {
 
 sub startup {
   my ($self) = @_;
-  my @startup_chans = ['#WAMM', '#wamm_bots', '#Inumuta', '#stopmodreposts', '#BlazeLoader', '#ItsAnimeTime', '#FTB-Wiki', '#SatanicSanta', '#ModPackers', '#Gideonseymour', '#randomtrajing'];
-
-  foreach my $chan (@startup_chans) {
-    $self->join($chan);
-  }
+  $self->join('#WAMM');
+  $self->join('#wamm_bots');
+  $self->join('#Inumuta');
+  $self->join('#stopmodreposts');
+  $self->join('#BlazeLoader');
+  $self->join('#ItsAnimeTime');
+  $self->join('#FTB-Wiki');
+  $self->join('#SatanicSanta');
+  $self->join('#ModPackers');
+  $self->join('#Gideonseymour');
+  $self->join('#randomtrajing');
 }
 
 sub prompt {
