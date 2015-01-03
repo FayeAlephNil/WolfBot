@@ -162,7 +162,7 @@ sub said {
       $to_say = substr($to_say, 1);
       $self->say(
       channel => $the_chan,
-      body    => $nick . " told me to say, " . $to_say
+      body    => $to_say . " (" . $nick . ")"
       );
     } elsif ($command =~ m/^say_in_chan/) {
       this_command_needs_args("say_in_chan", 2, $message, $self);
@@ -192,7 +192,7 @@ sub said {
       $to_act = substr($to_act, 1);
       $self->emote(
       channel => $the_chan,
-      body    => $to_act
+      body    => $to_act . " (" . $nick . ")"
       );
     } elsif ($command =~ m/^act_in_chan/) {
       this_command_needs_args("act_in_chan", 2, $message, $self);
@@ -210,12 +210,35 @@ sub said {
       this_command_needs_args("kill", 1, $message, $self)
     }
 
+    #oy command
+    if ($command =~ m/^py\s.+/) {
+      my ($py, $to_py) = split(/^py\s/, $command);
+      my @words = split(/\s/, $to_py);
+      $to_py = '';
+      my $counter = 0;
+      foreach my $word (@words) {
+        if ($counter != 0) {
+          $word = "%20" . $word;
+        }
+        $to_py = $to_py . $word;
+        $counter += 1;
+      }
+
+      my $output_py = get('http://tumbolia.appspot.com/py/' . $to_py);
+      $self->say(
+      channel => $message->{channel},
+      body    => $output_py
+      );
+    } elsif ($command =~ m/^kill\s*/) {
+      this_command_needs_args("kill", 1, $message, $self)
+    }
+
     #help command
     if ($command eq 'help') {
       $self->notice(
       channel => 'msg',
       who     => $nick,
-      body    => ('My activation character is @ and I can do these commands: ops, drama, github, help, say, say_in_chan (chan then message), act_in_chan (chan then message), kill, cookie, action, and host. I can also do part, join, and quit if the person is authenticated with me. To authenticate msg me @auth [the-password]. For channel ops you can do the leave command to get rid of me')
+      body    => ('My activation character is @ and I can do these commands: py, ops, drama, github, help, say, say_in_chan (chan then message), act_in_chan (chan then message), kill, cookie, action, and host. I can also do part, join, and quit if the person is authenticated with me. To authenticate msg me @auth [the-password]. For channel ops you can do the leave command to get rid of me')
       );
     }
 
