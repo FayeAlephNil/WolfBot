@@ -170,7 +170,7 @@ sub said {
       }
 
       $to_act = substr($to_act, 1);
-      $self->say(
+      $self->emote(
       channel => $the_chan,
       body    => $to_act
       );
