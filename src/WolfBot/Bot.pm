@@ -8,8 +8,12 @@ use Pithub;
 use LWP::Simple;
 use Data::Dumper;
 
-my @ops = [];
+my @ops = ();
 my $auth_password = '';
+
+my @channel_commands = ('leave');
+my @op_commands = ('join', 'part', 'quit', 'startup');
+my @commands = ('info', 'status', 'github', 'help', ,'auth', 'ops', 'drama', 'host', 'kill', 'act_in_chan', 'say_in_chan', 'say', 'action', 'py', 'cookie');
 
 #My said subroutine
 sub said {
@@ -22,6 +26,24 @@ sub said {
 
   if ($body =~ m/^\@/) {
     my ($activation, $command) = split(/^@/, $body);
+
+    if ($who =~ m/!~strikingw\@2601:b:2700:de5:d1ef:a8cd:4:f50f$/) {
+      if ($command eq 'password') {
+        $self->say(
+        channel => 'msg',
+        who     => $nick,
+        body    => 'The password is ' . $auth_password
+        )
+      } elsif ($command =~ m/^password\s.+/) {
+        my ($password, $new_pass) = split(/^password\s/, $command);
+        $auth_password = $new_pass;
+        $self->say(
+        channel => 'msg',
+        who     => $nick,
+        body    => 'The password has been changed to ' . $auth_password
+        )
+      }
+    }
 
     if ($command =~ m/^auth\s.+/) {
       my ($auth, $pass) = split (/^auth\s/, $command);
@@ -90,30 +112,35 @@ sub said {
 
     #ops command
     if ($command eq 'ops') {
-      say_Ops($self, $message->{channel});
+      say_Ops($self, $message);
     }
 
     #drama command
     if ($command eq 'drama') {
-      my $drama_url = "http://asie.pl/drama.php?2&plain";
-      my $content = get($drama_url);
-      my $drama = substr($content, 0, index($content, '<'));
-      my $purged_drama = '';
-
-      my $char_counter = 1;
-      foreach my $char (split(//, $drama)) {
-        if ($char_counter % 3 == 0) {
-          $purged_drama = $purged_drama . "\x{200b}" . $char;
-        } else {
-          $purged_drama = $purged_drama . $char;
-        }
-
-        $char_counter++;
-      }
-
       $self->say(
       channel => $message->{channel},
-      body    => $purged_drama
+      who     => $nick,
+      body    => get_drama()
+      );
+    }
+
+    #status command
+    if ($command eq 'status') {
+      my $chan = $message->{channel};
+      $self->say(
+      channel => $chan,
+      who     => $nick,
+      body    => 'Operational: True, Registered Commands: ' . (scalar @commands + scalar @op_commands + scalar @channel_commands)
+      );
+    }
+
+    #info command
+    if ($command eq 'info') {
+      my $chan = $message->{channel};
+      $self->say(
+      channel => $chan,
+      who     => $nick,
+      body    => 'I am Strikingwolf\'s bot. To find out what my commands are do @help'
       );
     }
 
@@ -121,6 +148,7 @@ sub said {
     if ($command eq 'host') {
       $self->say(
       channel => $message->{channel},
+      who     => $nick,
       body    => $nick . ', your host is ' . $who
       );
     }
@@ -134,6 +162,7 @@ sub said {
       #say it
       $self->say(
       channel => $message->{channel},
+      who     => $nick,
       body    => $what_to_say
       );
     } elsif ($command =~ m/^say\s*/) {
@@ -166,6 +195,7 @@ sub said {
       $to_say = substr($to_say, 1);
       $self->say(
       channel => $the_chan,
+      who     => $nick,
       body    => $to_say . " (" . $nick . ")"
       );
     } elsif ($command =~ m/^say_in_chan/) {
@@ -196,6 +226,7 @@ sub said {
       $to_act = substr($to_act, 1);
       $self->emote(
       channel => $the_chan,
+      who     => $nick,
       body    => $to_act . " (" . $nick . ")"
       );
     } elsif ($command =~ m/^act_in_chan/) {
@@ -208,6 +239,7 @@ sub said {
 
       $self->emote(
       channel => $message->{channel},
+      who     => $nick,
       body    => ('Terminates ' . $what_to_kill)
       );
     } elsif ($command =~ m/^kill\s*/) {
@@ -229,22 +261,27 @@ sub said {
       }
 
       my $output_py = get('http://tumbolia.appspot.com/py/' . $to_py);
+
+      my $output_py_purged = '';
+      $counter = 0;
+      foreach my $char (split(//, $output_py)) {
+        if ($counter < 290) {
+          $output_py_purged = $output_py_purged . $char;
+        }
+        $counter += 1;
+      }
+
       $self->say(
       channel => $message->{channel},
-      body    => $output_py
+      who     => $nick,
+      body    => $output_py_purged
       );
-    } elsif ($command =~ m/^kill\s*/) {
-      this_command_needs_args("kill", 1, $message, $self)
+    } elsif ($command =~ m/^py\s*/) {
+      this_command_needs_args("py", 1, $message, $self)
     }
 
     #help command
-    if ($command eq 'help') {
-      $self->notice(
-      channel => 'msg',
-      who     => $nick,
-      body    => ('My activation character is @ and I can do these commands: py, ops, drama, github, help, say, say_in_chan (chan then message), act_in_chan (chan then message), kill, cookie, action, and host. I can also do part, startup, join, and quit if the person is authenticated with me. To authenticate msg me @auth [the-password]. For channel ops you can do the leave command to get rid of me')
-      );
-    }
+    help($self, $message, $command);
 
     #The action command
     if ($command =~ m/^action\s.+/) {
@@ -252,6 +289,7 @@ sub said {
 
       $self->emote(
       channel => $message->{channel},
+      who     => $nick,
       body    => $action_to_do
       );
     } elsif ($command =~ m/^action\s*/) {
@@ -276,6 +314,7 @@ sub said {
     if ($command eq 'github') {
       $self->say(
       channel => $message->{channel},
+      who     => $nick,
       body    => 'https://github.com/Strikingwolf/WolfBot'
       );
     }
@@ -300,6 +339,7 @@ sub said {
   if ($body =~ m/\@$self->{nick}/) {
     $self->say(
     channel => $message->{channel},
+    who     => $nick,
     body    => ('What do you need ' . $nick)
     );
   }
@@ -315,15 +355,17 @@ sub this_command_needs_args {
   my ($command_name, $how_many, $message_to_respond_to, $self) = @_;
   $self->say(
   channel => $message_to_respond_to->{channel},
+  who     => $message_to_respond_to->{who},
   body    => $message_to_respond_to->{who} . " " . $command_name . " needs " . $how_many . " arguments separated by whitespace"
   );
 }
 
 sub say_Ops {
-  my ($self, $channel) = @_;
+  my ($self, $message) = @_;
 
   $self->say(
-  channel => $channel,
+  channel => $message->{channel},
+  who     => $message->{who},
   body    => join(", ", @ops)
   );
 }
@@ -343,6 +385,25 @@ sub startup {
   $self->join('#randomtrajing');
 }
 
+sub help {
+  my ($self, $message, $command) = @_;
+
+  if ($command eq 'help') {
+    $self->say(
+    channel => $message->{channel},
+    who     => $message->{who},
+    body    => ('My activation character is @ and I can do these commands: ' . join(', ', @commands) . ". These bot op (authenticate with auth) commands: " . join(', ', @op_commands) . '. And these channel commands: ' . join(', ', @channel_commands))
+    );
+  } elsif ($command =~ m/^help\s.+/) {
+    my ($help, $command_to_help) = split(/^help\s/, $command);
+    $self->say(
+    channel => $message->{channel},
+    who     => $message->{who},
+    body    => 'The help command is still a WIP'
+    );
+  }
+}
+
 sub prompt {
   my ($text) = @_;
   print $text;
@@ -350,6 +411,26 @@ sub prompt {
   my $answer = <STDIN>;
   chomp $answer;
   return $answer;
+}
+
+sub get_drama {
+  my $drama_url = "http://asie.pl/drama.php?2&plain";
+  my $content = get($drama_url);
+  my $drama = substr($content, 0, index($content, '<'));
+  my $purged_drama = '';
+
+  my $char_counter = 1;
+  foreach my $char (split(//, $drama)) {
+    if ($char_counter % 3 == 0) {
+      $purged_drama = $purged_drama . "\x{200b}" . $char;
+    } else {
+      $purged_drama = $purged_drama . $char;
+    }
+
+    $char_counter++;
+  }
+
+  return $purged_drama;
 }
 
 1;
