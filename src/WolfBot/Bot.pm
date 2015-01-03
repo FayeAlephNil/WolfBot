@@ -87,9 +87,22 @@ sub said {
       my $drama_url = "http://asie.pl/drama.php?2&plain";
       my $content = get($drama_url);
       my $drama = substr($content, 0, index($content, '<'));
+      my $purged_drama = '';
+
+      my $char_counter = 1;
+      foreach my $char (split(//, $drama)) {
+        if ($char_counter % 3 == 0) {
+          $purged_drama = $purged_drama . "\x{200b}" . $char;
+        } else {
+          $purged_drama = $purged_drama . $char;
+        }
+
+        $char_counter++;
+      }
+
       $self->say(
       channel => $message->{channel},
-      body    => $drama
+      body    => $purged_drama
       );
     }
 
@@ -194,7 +207,7 @@ sub said {
     if ($command eq 'help') {
       $self->say(
       channel => $message->{channel},
-      body    => ('My activation character is @ and I can do these commands: drama, github, help, say, say_in_chan (chan then message), act_in_chan (chan then message), kill, cookie, action, and host. I can also do part, join, and quit if the person is authenticated with me. To authenticate msg me @auth [the-password]. For channel ops you can do the leave command to get rid of em')
+      body    => ('My activation character is @ and I can do these commands: drama, github, help, say, say_in_chan (chan then message), act_in_chan (chan then message), kill, cookie, action, and host. I can also do part, join, and quit if the person is authenticated with me. To authenticate msg me @auth [the-password]. For channel ops you can do the leave command to get rid of me')
       );
     }
 
