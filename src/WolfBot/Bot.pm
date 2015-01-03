@@ -212,7 +212,7 @@ sub said {
 
     #help command
     if ($command eq 'help') {
-      $self->say(
+      $self->notice(
       channel => $message->{channel},
       body    => ('My activation character is @ and I can do these commands: ops, drama, github, help, say, say_in_chan (chan then message), act_in_chan (chan then message), kill, cookie, action, and host. I can also do part, join, and quit if the person is authenticated with me. To authenticate msg me @auth [the-password]. For channel ops you can do the leave command to get rid of me')
       );
