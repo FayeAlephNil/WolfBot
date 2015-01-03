@@ -332,7 +332,7 @@ sub startup {
   my ($self) = @_;
   my @startup_chans = ['#WAMM', '#wamm_bots', '#Inumuta', '#stopmodreposts', '#BlazeLoader', '#ItsAnimeTime', '#FTB-Wiki', '#SatanicSanta', '#ModPackers', '#Gideonseymour', '#randomtrajing'];
 
-  foreach $chan (@startup_chans) {
+  foreach my $chan (@startup_chans) {
     $self->join($chan);
   }
 }
