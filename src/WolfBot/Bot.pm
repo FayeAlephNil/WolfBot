@@ -260,7 +260,8 @@ sub said {
         $counter += 1;
       }
 
-      my $output_py = get('http://tumbolia.appspot.com/py/' . $to_py);
+      my $output_py = 'The app I am using failed to give me a response. This may mean that you are using to many resources'
+      $output_py = get('http://tumbolia.appspot.com/py/' . $to_py);
 
       my $output_py_purged = '';
       $counter = 0;
