@@ -113,7 +113,9 @@ sub said {
       body    => $what_to_say
       );
     } elsif ($command =~ m/^say\s*/) {
-      this_command_needs_args("say", 1, $message, $self);
+      if (!($command =~ m/^say_in_chan/)) {
+        this_command_needs_args("say", 1, $message, $self);
+      }
     }
 
     #say_in_chan
@@ -137,12 +139,43 @@ sub said {
         }
       }
 
+      $to_say = substr($to_say, 1);
       $self->say(
       channel => $the_chan,
       body    => $to_say
       );
     } elsif ($command =~ m/^say_in_chan/) {
-      this_command_needs_args("say", 2, $message, $self);
+      this_command_needs_args("say_in_chan", 2, $message, $self);
+    }
+
+    #act_in_chan
+    if ($command =~ m/^act_in_chan\s.+\s.+/) {
+      my ($act_in_chan, $rest) = split(/^act_in_chan\s/, $command);
+
+      #get chan/say
+      my $the_chan = substr($rest, 0, index($rest, ' '));
+      my @get_to_act = split(/\s/, $rest);
+      my $count = 0;
+      my $to_act = '';
+      foreach my $word (@get_to_act) {
+        if ($count == 0) {
+          if ($word eq $the_chan) {
+            $count += 2;
+          } else {
+            $to_act = $to_act . ' ' . $word;
+          }
+        } else {
+          $to_act = $to_act . ' ' . $word;
+        }
+      }
+
+      $to_act = substr($to_act, 1);
+      $self->say(
+      channel => $the_chan,
+      body    => $to_act
+      );
+    } elsif ($command =~ m/^act_in_chan/) {
+      this_command_needs_args("act_in_chan", 2, $message, $self);
     }
 
     #kill command
