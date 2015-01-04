@@ -13,7 +13,7 @@ my $auth_password = '';
 
 my @channel_commands = ('leave');
 my @op_commands = ('join', 'part', 'quit', 'startup');
-my @commands = ('info', 'status', 'github', 'help', ,'auth', 'ops', 'drama', 'host', 'kill', 'act_in_chan', 'say_in_chan', 'say', 'action', 'py', 'cookie');
+my @commands = ('channels', 'info', 'status', 'github', 'help', ,'auth', 'ops', 'drama', 'host', 'kill', 'act_in_chan', 'say_in_chan', 'say', 'action', 'py', 'cookie');
 
 #My said subroutine
 sub said {
@@ -245,8 +245,17 @@ sub said {
     } elsif ($command =~ m/^kill\s*/) {
       this_command_needs_args("kill", 1, $message, $self)
     }
+    
+    #channels command
+    if ($command eq 'channels') {
+      $self->say(
+      channel => $message->{channel},
+      who     => $nick,
+      body    => 'I am connected to: ' . join(', ', $pocoirc->nick_channels($self->{nick}))
+      );
+    }
 
-    #oy command
+    #py command
     if ($command =~ m/^py\s.+/) {
       my ($py, $to_py) = split(/^py\s/, $command);
       my @words = split(/\s/, $to_py);
@@ -260,8 +269,8 @@ sub said {
         $counter += 1;
       }
 
-      my $output_py = 'The app I am using failed to give me a response. This may mean that you are using to many resources';
-      $output_py = get('http://tumbolia.appspot.com/py/' . $to_py);
+      my $output_py = get('http://tumbolia.appspot.com/py/' . $to_py);
+      $output_py //= 'The app I am using failed to give me a response. This may mean that you are using to many resources';
 
       my $output_py_purged = '';
       $counter = 0;
