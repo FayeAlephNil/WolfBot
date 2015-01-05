@@ -31,6 +31,7 @@ sub said {
   my $who = $message->{raw_nick};
   my $pocoirc = $self->pocoirc();
   my $chan = $message->{channel};
+  my ($throway, $person) = split(/^$nick/, $who);
 
   $self->yield(register => 'whois');
 
@@ -64,8 +65,7 @@ sub said {
         who     => $nick,
         body    => $nick . ', you have been added to the list of ops'
         );
-        my ($throway, $new_op) = split(/^$nick!/, $who);
-        push(@ops, $new_op);
+        push(@ops, $person);
       } else {
         $self->say(
         channel => $chan,
@@ -79,7 +79,7 @@ sub said {
 
     #op commands
     foreach my $op (@ops) {
-      if ($who =~ m/$op$/) {
+      if ($person eq $op) {
         if ($command eq 'startup') {
           startup($self);
         }
@@ -385,25 +385,39 @@ sub said {
     );
   }
 
-  my $a_user_ref = $spyers->{$nick};
-  foreach my $key (keys %{$a_user_ref}) {
-    if ($spyers->{$nick}->{$key}[0]) {
-      $self->say(
-      channel => $spyers->{$nick}->{$key}[1],
-      who     => $key,
-      body    => "[$nick][$chan]: $body"
-      );
+  if ($chan ne 'msg') {
+    my $a_user_ref = $spyers->{$nick};
+    foreach my $key (keys %{$a_user_ref}) {
+      if ($spyers->{$nick}->{$key}[0]) {
+        $self->say(
+        channel => $spyers->{$nick}->{$key}[1],
+        who     => $key,
+        body    => purge_pings("[$chan][$nick]: $body")
+        );
+      }
     }
-  }
 
-  my $a_chan_ref = $spyers->{$chan};
-  foreach my $key (keys %{$a_chan_ref}) {
-    if ($spyers->{$chan}->{$key}[0]) {
-      $self->say(
-      channel => $spyers->{$chan}->{$key}[1],
-      who     => $key,
-      body    => "[$nick][$chan]: $body"
-      );
+    my $a_chan_ref = $spyers->{$chan};
+    foreach my $key (keys %{$a_chan_ref}) {
+      if ($spyers->{$chan}->{$key}[0]) {
+        $self->say(
+        channel => $spyers->{$chan}->{$key}[1],
+        who     => $key,
+        body    => purge_pings("[$chan][$nick]: $body")
+        );
+      }
+    }
+
+
+    my $a_who_ref = $spyers->{$person};
+    foreach my $key (keys %{$a_who_ref}) {
+      if ($spyers->{$person}->{$key}[0]) {
+        $self->say(
+        channel => $spyers->{$person}->{$key}[1],
+        who     => $key,
+        body    => purge_pings("[$chan][$nick]: $body")
+        );
+      }
     }
   }
 }
@@ -478,20 +492,26 @@ sub get_drama {
   my $drama_url = "http://asie.pl/drama.php?2&plain";
   my $content = get($drama_url);
   my $drama = substr($content, 0, index($content, '<'));
-  my $purged_drama = '';
+
+  return purge_pings($drama);
+}
+
+sub purge_pings {
+  my ($original) = @_;
+  my $purged = '';
 
   my $char_counter = 1;
-  foreach my $char (split(//, $drama)) {
+  foreach my $char (split(//, $original)) {
     if ($char_counter % 3 == 0) {
-      $purged_drama = $purged_drama . "\x{200b}" . $char;
+      $purged = $purged . "\x{200b}" . $char;
     } else {
-      $purged_drama = $purged_drama . $char;
+      $purged = $purged . $char;
     }
 
     $char_counter++;
   }
 
-  return $purged_drama;
+  return $purged;
 }
 
 1;
