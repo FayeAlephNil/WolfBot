@@ -7,13 +7,20 @@ use base qw(Bot::BasicBot);
 use Pithub;
 use LWP::Simple;
 use Data::Dumper;
+use POE;
 
 my @ops = ();
 my $auth_password = '';
 
 my @channel_commands = ('leave');
 my @op_commands = ('join', 'part', 'quit', 'startup');
-my @commands = ('channels', 'info', 'status', 'github', 'help', ,'auth', 'ops', 'drama', 'host', 'kill', 'act_in_chan', 'say_in_chan', 'say', 'action', 'py', 'cookie');
+my @commands = ('spy', 'channels', 'info', 'status', 'github', 'help', ,'auth', 'ops', 'drama', 'host', 'kill', 'act_in_chan', 'say_in_chan', 'say', 'action', 'py', 'cookie');
+
+my %hash_spyers = ();
+my $spyers = \%hash_spyers;
+
+my $whois_hash;
+
 
 #My said subroutine
 sub said {
@@ -23,6 +30,9 @@ sub said {
   my $nick = $message->{who};
   my $who = $message->{raw_nick};
   my $pocoirc = $self->pocoirc();
+  my $chan = $message->{channel};
+
+  $self->yield(register => 'whois');
 
   if ($body =~ m/^\@/) {
     my ($activation, $command) = split(/^@/, $body);
@@ -58,7 +68,7 @@ sub said {
         push(@ops, $new_op);
       } else {
         $self->say(
-        channel => $message->{channel},
+        channel => $chan,
         who     => $nick,
         body    => $nick . ', that is not the correct password'
         );
@@ -87,7 +97,7 @@ sub said {
           $self->part($part_chan);
 
         } elsif ($command =~ m/^part\s*/) {
-          $self->part($message->{channel})
+          $self->part($chan)
         }
 
         #join command
@@ -104,9 +114,9 @@ sub said {
     }
 
     #channel owner commands
-    if ($pocoirc->is_channel_operator($message->{channel}, $nick)) {
+    if ($pocoirc->is_channel_operator($chan, $nick)) {
       if ($command eq 'leave') {
-        $self->part($message->{channel});
+        $self->part($chan);
       }
     }
 
@@ -118,7 +128,7 @@ sub said {
     #drama command
     if ($command eq 'drama') {
       $self->say(
-      channel => $message->{channel},
+      channel => $chan,
       who     => $nick,
       body    => get_drama()
       );
@@ -126,7 +136,7 @@ sub said {
 
     #status command
     if ($command eq 'status') {
-      my $chan = $message->{channel};
+      my $chan = $chan;
       $self->say(
       channel => $chan,
       who     => $nick,
@@ -136,7 +146,7 @@ sub said {
 
     #info command
     if ($command eq 'info') {
-      my $chan = $message->{channel};
+      my $chan = $chan;
       $self->say(
       channel => $chan,
       who     => $nick,
@@ -147,7 +157,7 @@ sub said {
     #host command
     if ($command eq 'host') {
       $self->say(
-      channel => $message->{channel},
+      channel => $chan,
       who     => $nick,
       body    => $nick . ', your host is ' . $who
       );
@@ -161,7 +171,7 @@ sub said {
 
       #say it
       $self->say(
-      channel => $message->{channel},
+      channel => $chan,
       who     => $nick,
       body    => $what_to_say
       );
@@ -238,18 +248,55 @@ sub said {
       my ($kill, $what_to_kill) = split(/^kill\s/, $command);
 
       $self->emote(
-      channel => $message->{channel},
+      channel => $chan,
       who     => $nick,
       body    => ('Terminates ' . $what_to_kill)
       );
     } elsif ($command =~ m/^kill\s*/) {
-      this_command_needs_args("kill", 1, $message, $self)
+      this_command_needs_args("kill", 1, $message, $self);
     }
-    
+
+    #spy command
+    if ($command =~ m/^spy\s.+/) {
+      my ($spy, $to_spy_on) = split(/^spy\s/, $command);
+
+      my $current_states = $spyers->{$to_spy_on};
+      my %default_hash = ();
+      $current_states //= \%default_hash;
+
+      if (defined $current_states->{$nick}) {
+        if ($current_states->{$nick}[0]) {
+          $current_states->{$nick} = [0, $chan];
+        } else {
+          $current_states->{$nick} = [1, $chan];
+        }
+      } else {
+        $current_states->{$nick} = [1, $chan];
+      }
+
+      $spyers->{$to_spy_on} = $current_states;
+
+      if ($current_states->{$nick}[0]) {
+        $self->say(
+        channel => $chan,
+        who     => $nick,
+        body    => $nick . ", you are now spying on " . $to_spy_on
+        );
+      } else {
+        $self->say(
+        channel => $chan,
+        who     => $nick,
+        body    => $nick . ", you have stopped spying on " . $to_spy_on
+        );
+      }
+    } elsif ($command =~ m/^spy\s*/) {
+      this_command_needs_args("spy", 1, $message, $self);
+    }
+
     #channels command
     if ($command eq 'channels') {
       $self->say(
-      channel => $message->{channel},
+      channel => $chan,
       who     => $nick,
       body    => 'I am connected to: ' . join(', ', $pocoirc->nick_channels($self->{nick}))
       );
@@ -282,12 +329,12 @@ sub said {
       }
 
       $self->say(
-      channel => $message->{channel},
+      channel => $chan,
       who     => $nick,
       body    => $output_py_purged
       );
     } elsif ($command =~ m/^py\s*/) {
-      this_command_needs_args("py", 1, $message, $self)
+      this_command_needs_args("py", 1, $message, $self);
     }
 
     #help command
@@ -298,12 +345,12 @@ sub said {
       my ($action, $action_to_do) = split(/action\s/, $command);
 
       $self->emote(
-      channel => $message->{channel},
+      channel => $chan,
       who     => $nick,
       body    => $action_to_do
       );
     } elsif ($command =~ m/^action\s*/) {
-      this_command_needs_args("action", 1, $message, $self)
+      this_command_needs_args("action", 1, $message, $self);
     }
 
     #cookie command
@@ -313,47 +360,52 @@ sub said {
 
       #give the cookie it
       $self->say(
-      channel => $message->{channel},
+      channel => $chan,
       body    => $who_to . ', you got a cookie from ' . $nick
       );
     } elsif ($command =~ m/^cookie\s*/) {
-      this_command_needs_args("cookie", 1, $message, $self)
+      this_command_needs_args("cookie", 1, $message, $self);
     }
 
     #github command
     if ($command eq 'github') {
       $self->say(
-      channel => $message->{channel},
+      channel => $chan,
       who     => $nick,
       body    => 'https://github.com/Strikingwolf/WolfBot'
       );
     }
-
-    #repos command
-    #if ($command =~ m/^repos/) {
-      #get user
-      #my ($repos, $user) = split(/^repos\s/, $command);
-
-      #my $p = Pithub->new;
-
-      #my $result = $p->repos->list( user => $user );
-      #while ( my $row = $result->next ) {
-        #$self->say(
-        #channel => $message->{channel},
-        #body    => $row->{name}
-        #);
-      #}
-    #}
   }
 
   if ($body =~ m/\@$self->{nick}/) {
     $self->say(
-    channel => $message->{channel},
+    channel => $chan,
     who     => $nick,
     body    => ('What do you need ' . $nick)
     );
   }
 
+  my $a_user_ref = $spyers->{$nick};
+  foreach my $key (keys %{$a_user_ref}) {
+    if ($spyers->{$nick}->{$key}[0]) {
+      $self->say(
+      channel => $spyers->{$nick}->{$key}[1],
+      who     => $key,
+      body    => "[$nick][$chan]: $body"
+      );
+    }
+  }
+
+  my $a_chan_ref = $spyers->{$chan};
+  foreach my $key (keys %{$a_chan_ref}) {
+    if ($spyers->{$chan}->{$key}[0]) {
+      $self->say(
+      channel => $spyers->{$chan}->{$key}[1],
+      who     => $key,
+      body    => "[$nick][$chan]: $body"
+      );
+    }
+  }
 }
 
 sub init {
@@ -382,17 +434,16 @@ sub say_Ops {
 
 sub startup {
   my ($self) = @_;
-  $self->join('#WAMM');
-  $self->join('#wamm_bots');
-  $self->join('#Inumuta');
-  $self->join('#stopmodreposts');
-  $self->join('#BlazeLoader');
-  $self->join('#ItsAnimeTime');
-  $self->join('#FTB-Wiki');
-  $self->join('#SatanicSanta');
-  $self->join('#ModPackers');
-  $self->join('#Gideonseymour');
-  $self->join('#randomtrajing');
+  my @chans = ('#WAMM', '#wamm_bots', '#Inumuta', '#stopmodreposts', '#BlazeLoader', '#ItsAnimeTime', '#FTB-Wiki', '#SatanicSanta', '#ModPackers', '#Gideonseymour', '#randomtrajing');
+  join_chans($self, @chans);
+}
+
+sub join_chans {
+  my ($self, @to_join) = @_;
+
+  foreach my $chan (@to_join) {
+    $self->join($chan);
+  }
 }
 
 sub help {
