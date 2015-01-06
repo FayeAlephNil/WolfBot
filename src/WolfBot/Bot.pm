@@ -3,23 +3,23 @@ use strict;
 use diagnostics;
 
 package WolfBot::Bot;
+use WolfBot::CommandHandler;
 use base qw(Bot::BasicBot);
 use Pithub;
 use LWP::Simple;
 use Data::Dumper;
 use POE;
 
-my @ops = ();
-my $auth_password = '';
-
-my @channel_commands = ('leave');
-my @op_commands = ('join', 'part', 'quit', 'startup');
-my @commands = ('spy', 'channels', 'info', 'status', 'github', 'help', ,'auth', 'ops', 'drama', 'host', 'kill', 'act_in_chan', 'say_in_chan', 'say', 'action', 'py', 'cookie');
-
 my %hash_spyers = ();
-my $spyers = \%hash_spyers;
-
-my $whois_hash;
+my %bot_vars_hash = (ops => [],
+                auth_password => '',
+                channel_commands => ['leave'],
+                op_commands => ['join', 'part', 'quit', 'startup'],
+                commands => ['spy', 'channels', 'info', 'status', 'github', 'help', 'auth', 'ops', 'drama', 'host', 'kill', 'act_in_chan', 'say_in_chan', 'say', 'action', 'py', 'cookie']
+                );
+my $bot_vars = \%bot_vars_hash;
+$bot_vars->{hash_spyers} = %hash_spyers;
+$bot_vars->{spyers} = \$bot_vars->{hash_spyers};
 
 #My said subroutine
 sub said {
@@ -42,15 +42,15 @@ sub said {
         $self->say(
         channel => 'msg',
         who     => $nick,
-        body    => 'The password is ' . $auth_password
+        body    => 'The password is ' . $bot_vars->{auth_password}
         )
       } elsif ($command =~ m/^password\s.+/) {
         my ($password, $new_pass) = split(/^password\s/, $command);
-        $auth_password = $new_pass;
+        $bot_vars->{auth_password} = $new_pass;
         $self->say(
         channel => 'msg',
         who     => $nick,
-        body    => 'The password has been changed to ' . $auth_password
+        body    => 'The password has been changed to ' . $bot_vars->{auth_password}
         )
       }
     }
@@ -58,13 +58,13 @@ sub said {
     if ($command =~ m/^auth\s.+/) {
       my ($auth, $pass) = split (/^auth\s/, $command);
 
-      if ($pass eq $auth_password) {
+      if ($pass eq $bot_vars->{auth_password}) {
         $self->say(
         channel => $message->{channel},
         who     => $nick,
         body    => $nick . ', you have been added to the list of ops'
         );
-        push(@ops, $person);
+        push(@{$bot_vars->{ops}}, $person);
       } else {
         $self->say(
         channel => $chan,
@@ -77,7 +77,7 @@ sub said {
     }
 
     #op commands
-    foreach my $op (@ops) {
+    foreach my $op (@{$bot_vars->{ops}}) {
       if ($person eq $op) {
         if ($command eq 'startup') {
           startup($self);
@@ -142,7 +142,7 @@ sub said {
       $self->say(
       channel => $chan,
       who     => $nick,
-      body    => 'Operational: True, Registered Commands: ' . (scalar @commands + scalar @op_commands + scalar @channel_commands)
+      body    => 'Operational: True, Registered Commands: ' . (scalar @{$bot_vars->{commands}} + scalar @{$bot_vars->{op_commands}} + scalar @{$bot_vars->{channel_commands}})
       );
     }
 
@@ -262,7 +262,7 @@ sub said {
     if ($command =~ m/^spy\s.+/) {
       my ($spy, $to_spy_on) = split(/^spy\s/, $command);
 
-      my $current_states = $spyers->{$to_spy_on};
+      my $current_states = $bot_vars->{spyers}->{$to_spy_on};
       my %default_hash = ();
       $current_states //= \%default_hash;
 
@@ -276,7 +276,7 @@ sub said {
         $current_states->{$nick} = [1, $chan];
       }
 
-      $spyers->{$to_spy_on} = $current_states;
+      $bot_vars->{spyers}->{$to_spy_on} = $current_states;
 
       if ($current_states->{$nick}[0]) {
         $self->say(
@@ -367,22 +367,22 @@ sub said {
   }
 
   if ($chan ne 'msg') {
-    my $a_user_ref = $spyers->{$nick};
+    my $a_user_ref = $bot_vars->{spyers}->{$nick};
     foreach my $key (keys %{$a_user_ref}) {
-      if ($spyers->{$nick}->{$key}[0]) {
+      if ($bot_vars->{spyers}->{$nick}->{$key}[0]) {
         $self->say(
-        channel => $spyers->{$nick}->{$key}[1],
+        channel => $bot_vars->{spyers}->{$nick}->{$key}[1],
         who     => $key,
         body    => purge_pings("[$chan][$nick]: $body")
         );
       }
     }
 
-    my $a_chan_ref = $spyers->{$chan};
+    my $a_chan_ref = $bot_vars->{spyers}->{$chan};
     foreach my $key (keys %{$a_chan_ref}) {
-      if ($spyers->{$chan}->{$key}[0]) {
+      if ($bot_vars->{spyers}->{$chan}->{$key}[0]) {
         $self->say(
-        channel => $spyers->{$chan}->{$key}[1],
+        channel => $bot_vars->{spyers}->{$chan}->{$key}[1],
         who     => $key,
         body    => purge_pings("[$chan][$nick]: $body")
         );
@@ -390,11 +390,11 @@ sub said {
     }
 
 
-    my $a_who_ref = $spyers->{$person};
+    my $a_who_ref = $bot_vars->{spyers}->{$person};
     foreach my $key (keys %{$a_who_ref}) {
-      if ($spyers->{$person}->{$key}[0]) {
+      if ($bot_vars->{spyers}->{$person}->{$key}[0]) {
         $self->say(
-        channel => $spyers->{$person}->{$key}[1],
+        channel => $bot_vars->{spyers}->{$person}->{$key}[1],
         who     => $key,
         body    => purge_pings("[$chan][$nick]: $body")
         );
@@ -404,7 +404,7 @@ sub said {
 }
 
 sub init {
- $auth_password = prompt("Password for OP: \n");
+ $bot_vars->{auth_password} = prompt("Password for OP: \n");
  return 1;
 }
 
@@ -423,7 +423,7 @@ sub say_Ops {
   $self->say(
   channel => $message->{channel},
   who     => $message->{who},
-  body    => join(", ", @ops)
+  body    => join(", ", @{$bot_vars->{ops}})
   );
 }
 
@@ -448,7 +448,7 @@ sub help {
     $self->say(
     channel => $message->{channel},
     who     => $message->{who},
-    body    => ('My activation character is @ and I can do these commands: ' . join(', ', @commands) . ". These bot op (authenticate with auth) commands: " . join(', ', @op_commands) . '. And these channel commands: ' . join(', ', @channel_commands))
+    body    => ('My activation character is @ and I can do these commands: ' . join(', ', @{$bot_vars->{commands}}) . ". These bot op (authenticate with auth) commands: " . join(', ', @{$bot_vars->{op_commands}}) . '. And these channel commands: ' . join(', ', @{$bot_vars->{channel_commands}}))
     );
   } elsif ($command =~ m/^help\s.+/) {
     my ($help, $command_to_help) = split(/^help\s/, $command);
