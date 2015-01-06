@@ -21,7 +21,6 @@ my $spyers = \%hash_spyers;
 
 my $whois_hash;
 
-
 #My said subroutine
 sub said {
   #get some args
@@ -87,6 +86,9 @@ sub said {
         #quit command
         if ($command eq 'quit') {
           $self->shutdown;
+        } elsif ($command =~ m/^quit\s.+/) {
+          my ($quit, $quit_message) = split(/^quit\s/, $command);
+          $self->{quit_message} = $quit_message;
         }
 
         #part command
@@ -305,34 +307,13 @@ sub said {
     #py command
     if ($command =~ m/^py\s.+/) {
       my ($py, $to_py) = split(/^py\s/, $command);
-      my @words = split(/\s/, $to_py);
-      $to_py = '';
-      my $counter = 0;
-      foreach my $word (@words) {
-        if ($counter != 0) {
-          $word = "%20" . $word;
-        }
-        $to_py = $to_py . $word;
-        $counter += 1;
-      }
-
-      my $output_py = get('http://tumbolia.appspot.com/py/' . $to_py);
-      $output_py //= 'The app I am using failed to give me a response. This may mean that you are using to many resources';
-
-      my $output_py_purged = '';
-      $counter = 0;
-      foreach my $char (split(//, $output_py)) {
-        if ($counter < 290) {
-          $output_py_purged = $output_py_purged . $char;
-        }
-        $counter += 1;
-      }
 
       $self->say(
       channel => $chan,
       who     => $nick,
-      body    => $output_py_purged
+      body    => get_py($to_py)
       );
+
     } elsif ($command =~ m/^py\s*/) {
       this_command_needs_args("py", 1, $message, $self);
     }
@@ -514,4 +495,46 @@ sub purge_pings {
   return $purged;
 }
 
+sub get_py {
+  my $to_py = shift;
+
+  url_words($to_py);
+
+  my $output_py = get('http://tumbolia.appspot.com/py/' . $to_py);
+  $output_py //= 'The app I am using failed to give me a response. This may mean that you are using to many resources';
+
+  my $output_py_purged = one_line($output_py);
+
+  return $output_py_purged;
+}
+
+sub url_words {
+  my $text = shift;
+  my @words = split(/\s/, $text);
+
+  $text = '';
+  my $counter = 0;
+  foreach my $word (@words) {
+    if ($counter != 0) {
+      $word = "%20" . $word;
+    }
+    $text = $text . $word;
+    $counter += 1;
+  }
+  return $text;
+}
+
+sub one_line {
+  my $text = shift;
+
+  my $short = '';
+  my $counter = 0;
+  foreach my $char (split(//, $text)) {
+    if ($counter < 290) {
+      $short = $short . $char;
+    }
+    $counter += 1;
+  }
+  return $short;
+}
 1;
