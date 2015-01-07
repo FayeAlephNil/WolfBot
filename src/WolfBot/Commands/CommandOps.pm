@@ -2,8 +2,7 @@ use warnings;
 use strict;
 use diagnostics;
 
-package WolfBot::Commands::CommandDrama;
-use LWP::Simple;
+package WolfBot::Commands::CommandOps;
 
 sub new {
   my ($class, %args) = @_;
@@ -15,23 +14,20 @@ sub run {
 
   if ($message->{body} =~ m/^\@/) {
     my ($activation, $command) = split(/^@/, $message->{body});
-    if ($command eq 'drama') {
-      $bot->say(
-      channel => $message->{channel},
-      body    => get_drama(),
-      who     => $message->{who}
-      );
+    if ($command eq 'ops') {
+      say_ops($bot, $bot_vars, $message);
     }
   }
-
 }
 
-sub get_drama {
-  my $drama_url = "http://asie.pl/drama.php?2&plain";
-  my $content = get($drama_url);
-  my $drama = substr($content, 0, index($content, '<'));
+sub say_ops {
+  my ($bot, $bot_vars, $message) = @_;
 
-  return purge_pings($drama);
+  $bot->say(
+  channel => $message->{channel},
+  who     => $message->{who},
+  body    => join(", ", @{$bot_vars->{ops}})
+  );
 }
 
 sub purge_pings {

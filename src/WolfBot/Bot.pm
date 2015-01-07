@@ -13,6 +13,7 @@ use POE;
 
 #command stuff
 use WolfBot::Commands::CommandDrama;
+use WolfBot::Commands::CommandOps;
 use WolfBot::CommandHandler;
 
 
@@ -28,6 +29,12 @@ my $bot_vars = \%bot_vars_hash;
 $bot_vars->{hash_spyers} = %hash_spyers;
 $bot_vars->{spyers} = \$bot_vars->{hash_spyers};
 
+my $drama_command = WolfBot::Commands::CommandDrama->new();
+my $ops_command = WolfBot::Commands::CommandOps->new();
+my @actual_commands = ($drama_command, $ops_command);
+
+$bot_vars->{command_handler}->add_commands(@actual_commands);
+
 #My said subroutine
 sub said {
   #get some args
@@ -39,10 +46,6 @@ sub said {
   my $chan = $message->{channel};
   my ($throway, $person) = split(/^$nick/, $who);
 
-  my $drama_command = WolfBot::Commands::CommandDrama->new();
-  my @actual_commands = ($drama_command);
-
-  $bot_vars->{command_handler}->add_commands(@actual_commands);
   $bot_vars->{command_handler}->run($self, $bot_vars, $message);
 
   $self->yield(register => 'whois');
@@ -136,9 +139,9 @@ sub said {
     }
 
     #ops command
-    if ($command eq 'ops') {
-      say_Ops($self, $message);
-    }
+    #if ($command eq 'ops') {
+    #  say_Ops($self, $message);
+    #}
 
     #drama command
     #if ($command eq 'drama') {
@@ -427,16 +430,6 @@ sub this_command_needs_args {
   channel => $message_to_respond_to->{channel},
   who     => $message_to_respond_to->{who},
   body    => $message_to_respond_to->{who} . " " . $command_name . " needs " . $how_many . " arguments separated by whitespace"
-  );
-}
-
-sub say_Ops {
-  my ($self, $message) = @_;
-
-  $self->say(
-  channel => $message->{channel},
-  who     => $message->{who},
-  body    => join(", ", @{$bot_vars->{ops}})
   );
 }
 

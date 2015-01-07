@@ -6,7 +6,6 @@ package WolfBot::CommandHandler;
 
 sub new {
   my ($class, %args) = @_;
-  print("New CommandHandler made\n");
   return bless { %args }, $class;
 }
 
@@ -44,7 +43,6 @@ sub del_commands {
 sub run {
   my ($self, $bot, $bot_vars, $message) = @_;
 
-  print("CommandHandler was run\n");
   foreach my $command (@{$self->{commands}}) {
     $command->run($bot, $bot_vars, $message);
   }
