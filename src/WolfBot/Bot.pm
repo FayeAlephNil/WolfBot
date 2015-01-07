@@ -3,19 +3,26 @@ use strict;
 use diagnostics;
 
 package WolfBot::Bot;
-use WolfBot::CommandHandler;
 use base qw(Bot::BasicBot);
+
+#cpan stuff
 use Pithub;
 use LWP::Simple;
 use Data::Dumper;
 use POE;
+
+#command stuff
+use WolfBot::Commands::CommandDrama;
+use WolfBot::CommandHandler;
+
 
 my %hash_spyers = ();
 my %bot_vars_hash = (ops => [],
                 auth_password => '',
                 channel_commands => ['leave'],
                 op_commands => ['join', 'part', 'quit', 'startup'],
-                commands => ['spy', 'channels', 'info', 'status', 'github', 'help', 'auth', 'ops', 'drama', 'host', 'kill', 'act_in_chan', 'say_in_chan', 'say', 'action', 'py', 'cookie']
+                commands => ['spy', 'channels', 'info', 'status', 'github', 'help', 'auth', 'ops', 'drama', 'host', 'kill', 'act_in_chan', 'say_in_chan', 'say', 'action', 'py', 'cookie'],
+                command_handler => WolfBot::CommandHandler->new()
                 );
 my $bot_vars = \%bot_vars_hash;
 $bot_vars->{hash_spyers} = %hash_spyers;
@@ -31,6 +38,12 @@ sub said {
   my $pocoirc = $self->pocoirc();
   my $chan = $message->{channel};
   my ($throway, $person) = split(/^$nick/, $who);
+
+  my $drama_command = WolfBot::Commands::CommandDrama->new();
+  my @actual_commands = ($drama_command);
+
+  $bot_vars->{command_handler}->add_commands(@actual_commands);
+  $bot_vars->{command_handler}->run($self, $bot_vars, $message);
 
   $self->yield(register => 'whois');
 
@@ -128,13 +141,13 @@ sub said {
     }
 
     #drama command
-    if ($command eq 'drama') {
-      $self->say(
-      channel => $chan,
-      who     => $nick,
-      body    => get_drama()
-      );
-    }
+    #if ($command eq 'drama') {
+    #  $self->say(
+    #  channel => $chan,
+    #  who     => $nick,
+    #  body    => get_drama()
+    #  );
+    #}
 
     #status command
     if ($command eq 'status') {

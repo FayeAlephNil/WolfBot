@@ -6,21 +6,22 @@ package WolfBot::CommandHandler;
 
 sub new {
   my ($class, %args) = @_;
+  print("New CommandHandler made\n");
   return bless { %args }, $class;
 }
 
 sub add_command {
   my ($self, $command) = @_;
 
-  $self->{commands} //= ();
-  push($self->{commands}, $command);
+  $self->{commands} //= [];
+  push(@{$self->{commands}}, $command);
 }
 
 sub del_command {
   my ($self, $command) = @_;
 
   if (defined $self->{commands}) {
-    $self->{commands} = grep($_->{name} ne $command->{name}, $self->{commands});
+    @{$self->{commands}} = grep($_->{name} ne $command->{name}, @{$self->{commands}});
   }
 }
 
@@ -43,7 +44,8 @@ sub del_commands {
 sub run {
   my ($self, $bot, $bot_vars, $message) = @_;
 
-  foreach my $command ($self->{commands}) {
+  print("CommandHandler was run\n");
+  foreach my $command (@{$self->{commands}}) {
     $command->run($bot, $bot_vars, $message);
   }
 }
