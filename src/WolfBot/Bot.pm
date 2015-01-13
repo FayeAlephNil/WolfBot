@@ -26,8 +26,7 @@ my %bot_vars_hash = (ops => [],
                 command_handler => WolfBot::CommandHandler->new()
                 );
 my $bot_vars = \%bot_vars_hash;
-$bot_vars->{hash_spyers} = %hash_spyers;
-$bot_vars->{spyers} = \$bot_vars->{hash_spyers};
+$bot_vars->{spyers} = \%hash_spyers;
 
 my $drama_command = WolfBot::Commands::CommandDrama->new();
 my $ops_command = WolfBot::Commands::CommandOps->new();
