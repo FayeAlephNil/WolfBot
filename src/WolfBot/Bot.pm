@@ -17,6 +17,10 @@ use WolfBot::Commands::CommandStopSpy;
 use WolfBot::Commands::CommandDrama;
 use WolfBot::Commands::CommandOps;
 use WolfBot::Commands::CommandJoinToggle;
+use WolfBot::Commands::CommandRestart;
+
+#misc
+use WolfBot::Run;
 
 
 my %hash_spyers = ();
@@ -35,7 +39,8 @@ my $drama_command = WolfBot::Commands::CommandDrama->new();
 my $ops_command = WolfBot::Commands::CommandOps->new();
 my $stop_spy_command = WolfBot::Commands::CommandStopSpy->new();
 my $jointoggle_command = WolfBot::Commands::CommandJoinToggle->new();
-my @actual_commands = ($drama_command, $ops_command, $stop_spy_command, $jointoggle_command);
+my $restart_command = WolfBot::Commands::CommandRestart->new();
+my @actual_commands = ($drama_command, $ops_command, $stop_spy_command, $jointoggle_command, $restart_command);
 
 $bot_vars->{command_handler}->add_commands(@actual_commands);
 
@@ -429,8 +434,31 @@ sub said {
   }
 }
 
+sub nick_change {
+  my ($self, $old, $new) = @_;
+  foreach my $key (keys %{$bot_vars->{spyers}}) {
+    foreach my $key2 (keys %{$bot_vars->{spyers}->{$key}}) {
+      if ($old eq $key2) {
+        $bot_vars->{spyers}->{$key}->{$new} = $bot_vars->{spyers}->{$key}->{$old};
+        delete $bot_vars->{spyers}->{$key}->{$old};
+      }
+    }
+
+    if ($old eq $key) {
+      $bot_vars->{spyers}->{$new} = $bot_vars->{spyers}->{$old};
+      delete $bot_vars->{spyers}->{$old};
+    }
+  }
+}
+
 sub init {
- $bot_vars->{auth_password} = prompt("Password for OP: \n");
+
+ if (defined WolfBot::Run->get_backup()) {
+   $bot_vars->{auth_password} = WolfBot::Run->get_backup();
+ } else {
+   $bot_vars->{auth_password} = prompt("Password for OP: \n");
+ }
+
  return 1;
 }
 
@@ -451,7 +479,7 @@ sub this_command_needs_args {
 
 sub startup {
   my ($self) = @_;
-  my @chans = ('#wamm_bots', '#Inumuta', '#stopmodreposts', '#BlazeLoader', '#ItsAnimeTime', '#FTB-Wiki', '#SatanicSanta', '#ModPackers', '#Gideonseymour', '#randomtrajing');
+  my @chans = ('#StupidModdedMC', '#wamm_bots', '#Inumuta', '#stopmodreposts', '#BlazeLoader', '#ItsAnimeTime', '#FTB-Wiki', '#SatanicSanta', '#ModPackers', '#Gideonseymour', '#randomtrajing');
   join_chans($self, @chans);
 }
 
