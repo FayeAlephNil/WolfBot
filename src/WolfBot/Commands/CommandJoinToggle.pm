@@ -2,7 +2,7 @@ use warnings;
 use strict;
 use diagnostics;
 
-package WolfBot::Commands::CommandStopSpy;
+package WolfBot::Commands::CommandJoinToggle;
 
 sub new {
   my ($class, %args) = @_;
@@ -19,14 +19,16 @@ sub run {
 
     foreach my $op (@{$bot_vars->{ops}}) {
       if ($person eq $op) {
-        if ($command eq 'stopspy') {
-          for (keys %{$bot_vars->{spyers}})
-          {
-            delete $bot_vars->{spyers}->{$_};
+        if ($command eq 'jointoggle') {
+          if ($bot_vars->{spyjoin}) {
+            $bot_vars->{spyjoin} = 0;
+          } else {
+            $bot_vars->{spyjoin} = 1;
           }
+
           $bot->say(
           channel => $message->{channel},
-          body    => 'All spying stopped',
+          body    => 'Joining a channel on spy command toggled',
           who     => $message->{who}
           );
         }

@@ -16,14 +16,16 @@ use WolfBot::CommandHandler;
 use WolfBot::Commands::CommandStopSpy;
 use WolfBot::Commands::CommandDrama;
 use WolfBot::Commands::CommandOps;
+use WolfBot::Commands::CommandJoinToggle;
 
 
 my %hash_spyers = ();
 my %bot_vars_hash = (ops => [],
                 auth_password => '',
                 channel_commands => ['leave'],
-                op_commands => ['stopspy', 'join', 'part', 'quit', 'startup'],
+                op_commands => ['jointoggle', 'stopspy', 'join', 'part', 'quit', 'startup'],
                 commands => ['spy', 'channels', 'info', 'status', 'github', 'help', 'auth', 'ops', 'drama', 'host', 'kill', 'act_in_chan', 'say_in_chan', 'say', 'action', 'py', 'cookie'],
+                spyjoin => 0,
                 command_handler => WolfBot::CommandHandler->new()
                 );
 my $bot_vars = \%bot_vars_hash;
@@ -32,7 +34,8 @@ $bot_vars->{spyers} = \%hash_spyers;
 my $drama_command = WolfBot::Commands::CommandDrama->new();
 my $ops_command = WolfBot::Commands::CommandOps->new();
 my $stop_spy_command = WolfBot::Commands::CommandStopSpy->new();
-my @actual_commands = ($drama_command, $ops_command, $stop_spy_command);
+my $jointoggle_command = WolfBot::Commands::CommandJoinToggle->new();
+my @actual_commands = ($drama_command, $ops_command, $stop_spy_command, $jointoggle_command);
 
 $bot_vars->{command_handler}->add_commands(@actual_commands);
 
@@ -294,6 +297,12 @@ sub said {
       }
 
       $bot_vars->{spyers}->{$to_spy_on} = $current_states;
+
+      if ($bot_vars->{spyjoin}) {
+        if ($to_spy_on =~ m/^#/) {
+          $self->join($to_spy_on);
+        }
+      }
 
       if ($current_states->{$nick}[0]) {
         $self->say(
