@@ -19,9 +19,24 @@ sub add_command {
 sub del_command {
   my ($self, $command) = @_;
 
+  del_command_name($command->{name});
+}
+
+sub del_command_name {
+  my ($self, $name) = @_;
   if (defined $self->{commands}) {
-    @{$self->{commands}} = grep($_->{name} ne $command->{name}, @{$self->{commands}});
+    @{$self->{commands}} = grep($_->{name} ne $name, @{$self->{commands}});
   }
+}
+
+sub get_commands_with {
+  my ($self, $name) = @_;
+  return grep($_->{name} eq $name, @{$self->{commands}});
+}
+
+sub get_command {
+  my ($self, $command) = @_;
+  return get_commands_with($command->{name});
 }
 
 sub add_commands {

@@ -12,16 +12,17 @@ use Data::Dumper;
 use POE;
 
 #command stuff
+use WolfBot::CommandHandler;
+use WolfBot::Commands::CommandStopSpy;
 use WolfBot::Commands::CommandDrama;
 use WolfBot::Commands::CommandOps;
-use WolfBot::CommandHandler;
 
 
 my %hash_spyers = ();
 my %bot_vars_hash = (ops => [],
                 auth_password => '',
                 channel_commands => ['leave'],
-                op_commands => ['join', 'part', 'quit', 'startup'],
+                op_commands => ['stopspy', 'join', 'part', 'quit', 'startup'],
                 commands => ['spy', 'channels', 'info', 'status', 'github', 'help', 'auth', 'ops', 'drama', 'host', 'kill', 'act_in_chan', 'say_in_chan', 'say', 'action', 'py', 'cookie'],
                 command_handler => WolfBot::CommandHandler->new()
                 );
@@ -30,7 +31,8 @@ $bot_vars->{spyers} = \%hash_spyers;
 
 my $drama_command = WolfBot::Commands::CommandDrama->new();
 my $ops_command = WolfBot::Commands::CommandOps->new();
-my @actual_commands = ($drama_command, $ops_command);
+my $stop_spy_command = WolfBot::Commands::CommandStopSpy->new();
+my @actual_commands = ($drama_command, $ops_command, $stop_spy_command);
 
 $bot_vars->{command_handler}->add_commands(@actual_commands);
 
@@ -434,7 +436,7 @@ sub this_command_needs_args {
 
 sub startup {
   my ($self) = @_;
-  my @chans = ('#WAMM', '#wamm_bots', '#Inumuta', '#stopmodreposts', '#BlazeLoader', '#ItsAnimeTime', '#FTB-Wiki', '#SatanicSanta', '#ModPackers', '#Gideonseymour', '#randomtrajing');
+  my @chans = ('#wamm_bots', '#Inumuta', '#stopmodreposts', '#BlazeLoader', '#ItsAnimeTime', '#FTB-Wiki', '#SatanicSanta', '#ModPackers', '#Gideonseymour', '#randomtrajing');
   join_chans($self, @chans);
 }
 
