@@ -427,10 +427,16 @@ sub init {
 
 sub this_command_needs_args {
   my ($command_name, $how_many, $message_to_respond_to, $self) = @_;
+
+  my $arg_or_args = 'arguments';
+  if ($how_many == 1) {
+    $arg_or_args = 'argument';
+  }
+
   $self->say(
   channel => $message_to_respond_to->{channel},
   who     => $message_to_respond_to->{who},
-  body    => $message_to_respond_to->{who} . " " . $command_name . " needs " . $how_many . " arguments separated by whitespace"
+  body    =>  $message_to_respond_to->{who} . " $command_name needs $how_many $arg_or_args separated by whitespace"
   );
 }
 
