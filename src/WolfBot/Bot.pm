@@ -27,7 +27,7 @@ my %hash_spyers = ();
 my %bot_vars_hash = (ops => [],
                 auth_password => '',
                 channel_commands => ['leave'],
-                op_commands => ['jointoggle', 'stopspy', 'join', 'part', 'quit', 'startup'],
+                op_commands => ['restart', 'jointoggle', 'stopspy', 'join', 'part', 'quit', 'startup'],
                 commands => ['spy', 'channels', 'info', 'status', 'github', 'help', 'auth', 'ops', 'drama', 'host', 'kill', 'act_in_chan', 'say_in_chan', 'say', 'action', 'py', 'cookie'],
                 spyjoin => 0,
                 command_handler => WolfBot::CommandHandler->new()
