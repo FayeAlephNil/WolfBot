@@ -31,7 +31,7 @@ sub get_drama {
   my $content = get($drama_url);
   my $drama = substr($content, 0, index($content, '<'));
 
-  if ($drama eq '402 Payment Required') {
+  if ($drama eq '402 Payment Require') {
     $drama_url = "http://bigxplosion.tk/drama.php?plain";
     $content = get($drama_url);
     $drama = substr($content, 0, index($content, '<'));
