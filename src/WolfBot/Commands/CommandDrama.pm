@@ -31,6 +31,12 @@ sub get_drama {
   my $content = get($drama_url);
   my $drama = substr($content, 0, index($content, '<'));
 
+  if ($drama eq '402 Payment Required') {
+    my $drama_url = "http://bigxplosion.tk/drama.php?plain";
+    my $content = get($drama_url);
+    my $drama = substr($content, 0, index($content, '<'));
+  }
+
   return purge_pings($drama);
 }
 

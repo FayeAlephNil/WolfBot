@@ -23,10 +23,20 @@ sub run {
 sub say_ops {
   my ($bot, $bot_vars, $message) = @_;
 
+  my $last_op = '';
+  my $counter = 0;
+
+  foreach my $index (0 .. scalar(@{$bot_vars->{ops}})) {
+    if (@{$bot_vars->{ops}}[$index] eq $last_op) {
+      delete @{$bot_vars->{ops}}[$index];
+    }
+    $last_op = @{$bot_vars->{ops}}[$index];
+  }
+
   $bot->say(
   channel => $message->{channel},
   who     => $message->{who},
-  body    => join(", ", @{$bot_vars->{ops}})
+  body    => 'These are the people who are ops for me' . join(", ", @{$bot_vars->{ops}})
   );
 }
 

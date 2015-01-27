@@ -22,11 +22,15 @@ sub run {
     foreach my $op (@{$bot_vars->{ops}}) {
       if ($person eq $op) {
         if ($command eq 'restart') {
-          $bot->say(
-          channel => $message->{channel},
-          who     => $nick,
-          body    => 'Restarting'
-          );
+          my $poco = $bot->pocoirc();
+
+          foreach my $channel ($poco->nick_channels($self->{nick})) {
+            $bot->say(
+            channel => $channel,
+            who     => $nick,
+            body    => 'Restarting'
+            );
+          }
           WolfBot::Run->restart($bot, $bot_vars->{auth_password});
         }
       }

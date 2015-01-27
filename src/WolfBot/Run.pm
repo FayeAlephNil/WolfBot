@@ -45,6 +45,8 @@ sub prompt {
 }
 
 sub restart {
+  use WolfBot::Bot;
+  
   my ($self, $bot, $auth_pass) = @_;
 
   $backup_pass = $auth_pass;
