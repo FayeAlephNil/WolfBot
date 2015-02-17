@@ -69,7 +69,7 @@ sub said {
         channel => 'msg',
         who     => $nick,
         body    => 'The password is ' . $bot_vars->{auth_password}
-        )
+        );
       } elsif ($command =~ m/^password\s.+/) {
         my ($password, $new_pass) = split(/^password\s/, $command);
         $bot_vars->{auth_password} = $new_pass;
@@ -77,7 +77,18 @@ sub said {
         channel => 'msg',
         who     => $nick,
         body    => 'The password has been changed to ' . $bot_vars->{auth_password}
-        )
+        );
+      }
+
+      if ($command eq 'randpass') {
+        my $pass = new String::Random;
+        $bot_vars->{auth_password} = $pass->randpattern("CCcc!ccn");
+        $self->say(
+        channel => 'msg',
+        who     => $nick,
+        body    => 'The new password is: ' . $bot_vars->{auth_password}
+        );
+        print "The OP password is: " . $bot_vars->{auth_password} . "\n";
       }
     }
 
@@ -465,7 +476,6 @@ sub init {
  if (defined WolfBot::Run->get_backup()) {
    $bot_vars->{auth_password} = WolfBot::Run->get_backup();
  } else {
-   use String::Random;
    my $pass = new String::Random;
    $bot_vars->{auth_password} = $pass->randpattern("CCcc!ccn");
    print "The OP password is: " . $bot_vars->{auth_password} . "\n";
