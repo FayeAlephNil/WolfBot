@@ -26,11 +26,13 @@ sub say_ops {
   my $last_op = '';
   my $counter = 0;
 
-  foreach my $index (0 .. scalar(@{$bot_vars->{ops}})) {
-    if (@{$bot_vars->{ops}}[$index] eq $last_op) {
-      delete @{$bot_vars->{ops}}[$index];
+  if (scalar(@{$bot_vars->{ops}})) {
+    foreach my $index (0 .. scalar(@{$bot_vars->{ops}})) {
+      if (@{$bot_vars->{ops}}[$index] eq $last_op) {
+        delete @{$bot_vars->{ops}}[$index];
+      }
+      $last_op = @{$bot_vars->{ops}}[$index];
     }
-    $last_op = @{$bot_vars->{ops}}[$index];
   }
 
   $bot->say(
