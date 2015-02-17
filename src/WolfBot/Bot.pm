@@ -10,6 +10,7 @@ use Pithub;
 use LWP::Simple;
 use Data::Dumper;
 use POE;
+use String::Random;
 
 #command stuff
 use WolfBot::CommandHandler;
@@ -106,6 +107,14 @@ sub said {
       if ($person eq $op) {
         if ($command eq 'startup') {
           startup($self);
+        }
+
+        if ($command eq 'password') {
+          $self->say(
+          channel => 'msg',
+          who     => $nick,
+          body    => 'The password is ' . $bot_vars->{auth_password}
+          )
         }
 
         #quit command
@@ -456,7 +465,10 @@ sub init {
  if (defined WolfBot::Run->get_backup()) {
    $bot_vars->{auth_password} = WolfBot::Run->get_backup();
  } else {
-   $bot_vars->{auth_password} = prompt("Password for OP: \n");
+   use String::Random;
+   my $pass = new String::Random;
+   $bot_vars->{auth_password} = $pass->randpattern("CCcc!ccn");
+   print "The OP password is: " . $bot_vars->{auth_password} . "\n";
  }
 
  return 1;
