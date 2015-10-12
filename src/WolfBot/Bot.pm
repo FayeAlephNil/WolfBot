@@ -29,7 +29,7 @@ my %bot_vars_hash = (ops => [],
                 auth_password => '',
                 channel_commands => ['leave'],
                 op_commands => ['restart', 'jointoggle', 'stopspy', 'join', 'part', 'quit', 'startup'],
-                commands => ['spy', 'channels', 'info', 'status', 'github', 'help', 'auth', 'ops', 'drama', 'host', 'kill', 'act_in_chan', 'say_in_chan', 'say', 'action', 'py', 'cookie'],
+                commands => ['saythis', 'spy', 'channels', 'info', 'status', 'github', 'help', 'auth', 'ops', 'drama', 'host', 'kill', 'act_in_chan', 'say_in_chan', 'say', 'action', 'py', 'cookie'],
                 spyjoin => 0,
                 command_handler => WolfBot::CommandHandler->new()
                 );
@@ -211,7 +211,14 @@ sub said {
     }
 
     #say command
-    if ($command =~ m/^say\s/) {
+    #saythis command
+    if ($command =~ m/^saythis/) {
+      $self->say(
+      channel => $chan,
+      who     => $nick,
+      body    => $body
+      );
+    } elsif ($command =~ m/^say\s/) {
       #get what to say
       my ($say, $what_to_say) = split(/^say\s/, $command);
 
