@@ -1,0 +1,17 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    cinch (2.2.7)
+    rack (1.6.4)
+    robocop (0.1.1)
+      rack
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  cinch (~> 2.2.7)
+  robocop
+
+BUNDLED WITH
+   1.10.6
