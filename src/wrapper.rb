@@ -23,7 +23,8 @@ class Wrapper
           HelloPlugin,
           OpPlugin,
           CommandsPlugin,
-          RestartPlugin
+          RestartPlugin,
+          SrcPlugin
         ]
         c.plugins.prefix = /^@/
       end
@@ -34,7 +35,7 @@ class Wrapper
     end
 
     def restart
-      # DOESN'T WORK
+      # DOESN'T WORK, quit quits all threads, and this should reload all plugins
       BOT.quit
       BOT.start
     end
