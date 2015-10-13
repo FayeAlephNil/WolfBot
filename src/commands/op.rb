@@ -5,7 +5,7 @@ require_relative '../variables'
 class OpPlugin
   include Cinch::Plugin
 
-  match /op.*/
+  match(/op.*/)
   def execute(m)
     synchronize(:ops) do
       pass = m.message[4..-1]
