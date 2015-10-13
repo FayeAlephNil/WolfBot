@@ -6,3 +6,4 @@ source 'https://rubygems.org'
 
 gem 'cinch', '~> 2.2.7'
 gem 'robocop'
+gem 'pry'

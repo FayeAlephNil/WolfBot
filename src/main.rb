@@ -1,5 +1,7 @@
-require 'cinch'
+require_relative 'wrapper'
 
-puts "Starting Up"
+puts 'Starting Up'
+
+Wrapper.run
 
 # TODO, EVERYTHING
