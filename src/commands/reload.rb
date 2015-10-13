@@ -16,7 +16,7 @@ class ReloadPlugin
       if Wrapper.op? m.user
         plugin = Wrapper.get_plugin(s)
         if !plugin.nil?
-          Wrapper.reload
+          Wrapper.reload plugin
           m.reply "Reloaded #{s}"
         else
           m.reply "#{s} is not a plugin"

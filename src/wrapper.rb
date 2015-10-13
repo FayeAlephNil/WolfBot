@@ -36,16 +36,21 @@ class Wrapper
     end
 
     def get_plugin(s)
-      p BOT.plugins.class.name
-
-      # No method filter? TODO
-      (BOT.plugins.filter ->(plugin) { plugin.class.name == s }).first
+      if @@pluginhash == {}
+	    BOT.plugins.each do |plugin|
+	      @@pluginhash[plugin.class.name] = plugin
+	    end
+	  end
+	  @@pluginhash[s]
     end
 
     def reload(c)
-      BOT.plugins.unregister_plugin c
-      BOT.plugins.register_plugin c
-    end
+	  BOT.plugins.unregister_plugin c
+
+	  s = c.class.name
+	  load "commands/#{s.chomp('Plugin').downcase}.rb"
+	  BOT.plugins.register_plugin (c.class)
+	end
 
     def reloadall
       BOT.plugins.each method(:reload)

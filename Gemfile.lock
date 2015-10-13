@@ -22,6 +22,3 @@ DEPENDENCIES
   pry
   require_all
   robocop
-
-BUNDLED WITH
-   1.10.6
