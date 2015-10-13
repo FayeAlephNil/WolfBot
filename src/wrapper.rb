@@ -3,6 +3,9 @@ require_relative 'variables'
 
 # Commands
 require_relative 'commands/hello'
+require_relative 'commands/commands'
+require_relative 'commands/op'
+require_relative 'commands/restart'
 
 # Wrapper for the bot
 class Wrapper
@@ -16,7 +19,12 @@ class Wrapper
         c.realname = 'WolfBot'
         c.user = Variables::USER
 
-        c.plugins.plugins = [HelloPlugin]
+        c.plugins.plugins = [
+          HelloPlugin,
+          OpPlugin,
+          CommandsPlugin,
+          RestartPlugin
+        ]
         c.plugins.prefix = /^@/
       end
     end
@@ -26,7 +34,8 @@ class Wrapper
     end
 
     def restart
-      BOT.stop
+      # DOESN'T WORK
+      BOT.quit
       BOT.start
     end
   end
