@@ -8,6 +8,8 @@ require_rel 'commands'
 # Wrapper for the bot
 class Wrapper
   class << self
+    @@pluginnames = {}
+
     DIR = File.expand_path File.dirname(__FILE__)
 
     BOT = Cinch::Bot.new do
@@ -24,6 +26,7 @@ class Wrapper
           OpPlugin,
           CommandsPlugin,
           ReloadPlugin,
+          ReloadAllPlugin,
           SrcPlugin
         ]
 
@@ -31,32 +34,28 @@ class Wrapper
       end
     end
 
-    PLUGINNAMES = BOT.plugins.map do |plugin|
-      plugin.class.name.downcase.chomp 'plugin'
-    end
-
     def run
       BOT.start
     end
 
     def plugin?(s)
-      PLUGINNAMES.any? { |name| name == s }
+      if @@pluginnames == {}
+        @@pluginnames = BOT.plugins.map do |plugin|
+          plugin.class.name.downcase.chomp 'plugin'
+        end
+      end
+
+      str = s.downcase.chomp 'plugin'
+      @@pluginnames.any? { |name| name == str }
     end
 
     def reload(classname)
       s = DIR + "/commands/#{classname.downcase.chomp('plugin')}.rb"
-      p s
       load s
     end
 
     def reloadall
       BOT.plugins.each { |plugin| reload plugin.class.name }
-      reload_wrapper
-    end
-
-    def reload_wrapper
-      load DIR + '/wrapper'
-      load DIR + '/variables'
     end
 
     def op?(u)

@@ -9,7 +9,7 @@ require_relative '../variables'
 class ReloadPlugin
   include Cinch::Plugin
 
-  match(/reload.*/)
+  match(/reload\s.*/)
   def execute(m)
     synchronize(:bot) do
       s = m.message[8..-1]
@@ -17,9 +17,6 @@ class ReloadPlugin
         if Wrapper.plugin? s
           Wrapper.reload s
           m.reply "Reloaded #{s}"
-        elsif s.downcase == 'wrapper'
-          Wrapper.reload_wrapper
-          m.reply 'Reloaded the wrapper for this bot'
         else
           m.reply "#{s} is not a plugin or the wrapper"
         end
