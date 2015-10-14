@@ -53,7 +53,7 @@ class Wrapper
     end
 
     def reloadall
-      BOT.plugins.each ->(plugin) { reload plugin.class.name }
+      BOT.plugins.each { |plugin| reload plugin.class.name }
       reloadwrapper
     end
 
