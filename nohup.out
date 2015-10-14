@@ -1,0 +1,30 @@
+/home/striking/WolfBot/src/variables.rb:5:in `gets': Bad file descriptor - <STDIN> (Errno::EBADF)
+	from /home/striking/WolfBot/src/variables.rb:5:in `gets'
+	from /home/striking/WolfBot/src/variables.rb:5:in `putget'
+	from /home/striking/WolfBot/src/variables.rb:8:in `<module:Variables>'
+	from /home/striking/WolfBot/src/variables.rb:2:in `<top (required)>'
+	from /home/striking/WolfBot/src/wrapper.rb:2:in `require_relative'
+	from /home/striking/WolfBot/src/wrapper.rb:2:in `<top (required)>'
+	from src/main.rb:1:in `require_relative'
+	from src/main.rb:1:in `<main>'
+What is the nick?
+/home/striking/WolfBot/src/variables.rb:5:in `gets': Bad file descriptor - <STDIN> (Errno::EBADF)
+	from /home/striking/WolfBot/src/variables.rb:5:in `gets'
+	from /home/striking/WolfBot/src/variables.rb:5:in `putget'
+	from /home/striking/WolfBot/src/variables.rb:8:in `<module:Variables>'
+	from /home/striking/WolfBot/src/variables.rb:2:in `<top (required)>'
+	from /home/striking/WolfBot/src/wrapper.rb:2:in `require_relative'
+	from /home/striking/WolfBot/src/wrapper.rb:2:in `<top (required)>'
+	from src/main.rb:1:in `require_relative'
+	from src/main.rb:1:in `<main>'
+What is the nick?
+/home/striking/WolfBot/src/variables.rb:5:in `gets': Bad file descriptor - <STDIN> (Errno::EBADF)
+	from /home/striking/WolfBot/src/variables.rb:5:in `gets'
+	from /home/striking/WolfBot/src/variables.rb:5:in `putget'
+	from /home/striking/WolfBot/src/variables.rb:8:in `<module:Variables>'
+	from /home/striking/WolfBot/src/variables.rb:2:in `<top (required)>'
+	from /home/striking/WolfBot/src/wrapper.rb:2:in `require_relative'
+	from /home/striking/WolfBot/src/wrapper.rb:2:in `<top (required)>'
+	from src/main.rb:1:in `require_relative'
+	from src/main.rb:1:in `<main>'
+What is the nick?
