@@ -32,7 +32,7 @@ class Wrapper
     end
 
     PLUGINNAMES = BOT.plugins.map do |plugin|
-      plugin.downcase.chomp 'plugin'
+      plugin.class.name.downcase.chomp 'plugin'
     end
 
     def run
