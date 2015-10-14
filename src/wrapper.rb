@@ -8,7 +8,7 @@ require_rel 'commands'
 # Wrapper for the bot
 class Wrapper
   class << self
-    @pluginnames = {}
+     = {}
 
     DIR = File.expand_path File.dirname(__FILE__)
 
@@ -33,17 +33,16 @@ class Wrapper
       end
     end
 
+    PLUGINNAMES = BOT.plugins.map do |plugin|
+      plugin.downcase.chomp 'plugin'
+    end
+
     def run
       BOT.start
     end
 
     def plugin?(s)
-      if @pluginnames == {}
-        @pluginnnames = BOT.plugins.map do |plugin|
-          plugin.class.name
-        end
-      end
-      @pluginnnames.any? { |name| name == s }
+      PLUGINNAMES.any? { |name| name == s }
     end
 
     def reload(classname)
