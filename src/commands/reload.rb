@@ -14,9 +14,8 @@ class ReloadPlugin
     synchronize(:bot) do
       s = m.message[8..-1]
       if Wrapper.op? m.user
-        plugin = Wrapper.get_plugin(s)
-        if !plugin.nil?
-          Wrapper.reload plugin
+	    if Wrapper.plugin? s
+          Wrapper.reload s
           m.reply "Reloaded #{s}"
         else
           m.reply "#{s} is not a plugin"
