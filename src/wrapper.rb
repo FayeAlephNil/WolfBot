@@ -8,8 +8,6 @@ require_rel 'commands'
 # Wrapper for the bot
 class Wrapper
   class << self
-     = {}
-
     DIR = File.expand_path File.dirname(__FILE__)
 
     BOT = Cinch::Bot.new do
