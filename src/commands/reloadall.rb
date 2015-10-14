@@ -5,7 +5,7 @@ require 'cinch'
 require_relative '../wrapper'
 
 # The @reloadall command
-class ReloadPlugin
+class ReloadAllPlugin
   include Cinch::Plugin
 
   match 'reloadall'

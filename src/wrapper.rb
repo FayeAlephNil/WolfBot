@@ -54,7 +54,7 @@ class Wrapper
 
     def reloadall
       BOT.plugins.each { |plugin| reload plugin.class.name }
-      reloadwrapper
+      reload_wrapper
     end
 
     def reload_wrapper
