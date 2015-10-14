@@ -7,6 +7,7 @@ class HelloPlugin
 
   match 'hello'
   def execute(m)
-    m.reply "Hello #{m.user.nick}, my name is #{Variables::NICK}, a little WolfBot"
+    m.reply \
+      "Hello #{m.user.nick}, my name is #{Variables::NICK}, a little WolfBot"
   end
 end
