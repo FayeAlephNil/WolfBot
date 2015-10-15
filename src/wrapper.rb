@@ -1,14 +1,18 @@
+# Gems
 require 'cinch'
-require_relative 'variables'
+require 'require_all'
 
 # Commands
-require 'require_all'
 require_rel 'commands'
+
+# Extras
+
+require_relative 'variables'
 
 # Wrapper for the bot
 class Wrapper
   class << self
-    @@pluginnames = {}
+    attr_accessor :pluginnames
 
     DIR = File.expand_path File.dirname(__FILE__)
 
@@ -39,14 +43,14 @@ class Wrapper
     end
 
     def plugin?(s)
-      if @@pluginnames == {}
-        @@pluginnames = BOT.plugins.map do |plugin|
+      if @pluginnames == {}
+        @pluginnames = BOT.plugins.map do |plugin|
           plugin.class.name.downcase.chomp 'plugin'
         end
       end
 
       str = s.downcase.chomp 'plugin'
-      @@pluginnames.any? { |name| name == str }
+      @pluginnames.any? { |name| name == str }
     end
 
     def reload(classname)
@@ -62,4 +66,5 @@ class Wrapper
       Variables::OPS.any? { |x| x == u }
     end
   end
+  @pluginnames = {}
 end
