@@ -8,6 +8,8 @@ require_rel 'commands'
 # Extras
 
 require_relative 'variables'
+require_relative 'refinements'
+using Refinements
 
 # Wrapper for the bot
 class Wrapper
@@ -30,7 +32,7 @@ class Wrapper
           OpPlugin,
           CommandsPlugin,
           ReloadPlugin,
-          ReloadAllPlugin,
+          ReloadallPlugin,
           SrcPlugin
         ]
 
@@ -44,18 +46,17 @@ class Wrapper
 
     def plugin?(s)
       if @pluginnames == {}
-        @pluginnames = BOT.plugins.map do |plugin|
-          plugin.class.name.downcase.chomp 'plugin'
+        BOT.plugins.each do |plugin|
+          @pluginnames[plugin.class.name.downcase.chomp 'plugin'] = plugin
         end
       end
 
       str = s.downcase.chomp 'plugin'
-      @pluginnames.any? { |name| name == str }
+      @pluginnames.keys.any? { |name| name == str }
     end
 
     def reload(classname)
-      s = DIR + "/commands/#{classname.downcase.chomp('plugin')}.rb"
-      load s
+      load DIR + "/commands/#{classname.downcase.chomp('plugin')}.rb"
     end
 
     def reloadall

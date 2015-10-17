@@ -9,19 +9,18 @@ require_relative '../variables'
 class ReloadPlugin
   include Cinch::Plugin
 
-  match(/reload\s.*/)
-  def execute(m)
+  match(/reload\s(.+)/)
+  def execute(m, name)
     synchronize(:bot) do
-      s = m.message[8..-1]
       if Wrapper.op? m.user
-        if Wrapper.plugin? s
-          Wrapper.reload s
-          m.reply "Reloaded #{s}"
+        if Wrapper.plugin? name
+          Wrapper.reload name
+          m.reply "Reloaded #{name}"
         else
-          m.reply "#{s} is not a plugin or the wrapper"
+          m.reply "#{name} is not a plugin or the wrapper"
         end
       else
-        m.reply 'This is an op-only command, you are not oped'
+        m.reply 'This is an op-only command'
       end
     end
   end

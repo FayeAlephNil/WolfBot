@@ -5,13 +5,18 @@ require 'cinch'
 require_relative '../wrapper'
 
 # The @reloadall command
-class ReloadAllPlugin
+class ReloadallPlugin
   include Cinch::Plugin
 
   match 'reloadall'
-  def execute(_m)
+  def execute(m)
     synchronize(:bot) do
-      Wrapper.reloadall
+      if Wrapper.op? m.user
+        Wrapper.reloadall
+        m.reply 'Reloaded all plugins'
+      else
+        m.reply 'This is an op-only command'
+      end
     end
   end
 end

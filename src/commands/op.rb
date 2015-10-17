@@ -5,10 +5,9 @@ require_relative '../variables'
 class OpPlugin
   include Cinch::Plugin
 
-  match(/op.*/)
-  def execute(m)
+  match(/op\s(.+)/)
+  def execute(m, pass)
     synchronize(:ops) do
-      pass = m.message[4..-1]
       if pass == Variables::AUTHPASSWORD
         Variables::OPS.push m.user
         m.reply 'You have been oped'
