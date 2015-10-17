@@ -47,7 +47,7 @@ class Wrapper
   @bot = Cinch::Bot.new do
     configure do |c|
       c.server = 'irc.esper.net'
-      c.channels = ['#Testing']
+      c.channels = ['#TestingWolfBot']
       c.nick = Variables::NICK
       c.password = Variables::PASSWORD
       c.realname = 'WolfBot'
