@@ -8,8 +8,6 @@ require_rel 'commands'
 # Extras
 
 require_relative 'variables'
-require_relative 'refinements'
-using Refinements
 
 # Wrapper for the bot
 class Wrapper
